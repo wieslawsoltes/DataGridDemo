@@ -13,10 +13,8 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    
     <c:DataGrid>
-        
-        
+ 
     </c:DataGrid>
-    
+
 </Window>
