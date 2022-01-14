@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
@@ -205,7 +206,10 @@ public class DataGrid : Control
                 totalHeight += height;
             }
 
-            return new Size(totalWidth, totalHeight);
+            // var size = new Size(totalWidth, totalHeight);
+            var size = new Size(0, totalHeight);
+            // Debug.WriteLine($"[MeasureOverride] size='{size}'");
+            return size;
         }
 
         return base.MeasureOverride(availableSize);
@@ -228,12 +232,12 @@ public class DataGrid : Control
                 finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
             }
 
-            return new Size(finalSizeWidth, offset);
+            var size = new Size(finalSizeWidth, offset);
+            // Debug.WriteLine($"[ArrangeOverride] size='{size}'");
+            return size;
         }
-        else
-        {
-            return base.ArrangeOverride(finalSize);
-        }
+
+        return base.ArrangeOverride(finalSize);
     }
 
     private double GetTotalWidth()
@@ -282,6 +286,8 @@ public class DataGrid : Control
 
         var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
 
+        // Debug.WriteLine($"starColumnsWidth='{starColumnsWidth}', finalWidth='{finalWidth}', totalPixelSize='{totalPixelSize}', totalStarSize='{totalStarSize}'");
+
         for (var c = 0; c < Columns.Count; c++)
         {
             var column = Columns[c];
@@ -291,6 +297,7 @@ public class DataGrid : Control
                 case GridUnitType.Star:
                     var percentage = column.Width.Value / totalStarSize;
                     var width = starColumnsWidth * percentage;
+                    // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
                     ColumnWidths[c] = width;
                     totalPixelSize += ColumnWidths[c];
                     break;
