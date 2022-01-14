@@ -206,8 +206,22 @@ public class DataGrid : Control
                 totalHeight += height;
             }
 
+            bool hasStarColumn = false;
+            
+            for (var c = 0; c < Columns.Count; c++)
+            {
+                var column = Columns[c];
+
+                switch (column.Width.GridUnitType)
+                {
+                    case GridUnitType.Star:
+                        hasStarColumn = true;
+                        break;
+                }
+            }
+            
             // var size = new Size(totalWidth, totalHeight);
-            var size = new Size(0, totalHeight);
+            var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
             // Debug.WriteLine($"[MeasureOverride] size='{size}'");
             return size;
         }
