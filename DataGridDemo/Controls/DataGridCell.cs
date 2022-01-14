@@ -43,9 +43,7 @@ public class DataGridCell : Control
             Child.Arrange(rect);
             return rect.Size;
         }
-        else
-        {
-            return base.ArrangeOverride(finalSize);
-        }
+
+        return base.ArrangeOverride(finalSize);
     }
 }
