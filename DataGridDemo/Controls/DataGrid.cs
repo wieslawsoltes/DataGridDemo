@@ -126,14 +126,21 @@ public class DataGrid : Control
 
         foreach (var item in Items)
         {
-            var row = new DataGridRow() { Cells = new List<DataGridCell>(), DataGrid = this };
+            var row = new DataGridRow()
+            {
+                Cells = new List<DataGridCell>(), 
+                DataGrid = this
+            };
 
             foreach (var column in Columns)
             {
                 var cell = new DataGridCell()
                 {
-                    Column = column, Child = column.CellTemplate?.Build(item), DataGrid = this
+                    Column = column, 
+                    Child = column.CellTemplate?.Build(item), 
+                    DataGrid = this
                 };
+
                 row.Cells.Add(cell);
             }
 
