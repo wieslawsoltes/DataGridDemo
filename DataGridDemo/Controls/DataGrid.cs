@@ -158,92 +158,102 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
-    protected override Size MeasureOverride(Size availableSize)
+    private Size MeasureRows(Size availableSize)
     {
         if (ColumnWidths is null && Columns is { })
         {
             ColumnWidths = new double[Columns.Count];
         }
 
-        if (Rows is { } && Columns is { } && ColumnWidths is { })
+        if (Rows is null || Columns is null || ColumnWidths is null)
         {
-            foreach (var row in Rows)
-            {
-                row.Measure(availableSize);
-            }
+            return availableSize;
+        }
 
-            var totalWidth = 0.0;
-            var totalHeight = 0.0;
+        foreach (var row in Rows)
+        {
+            row.Measure(availableSize);
+        }
 
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                for (var r = 0; r < Rows.Count; r++)
-                {
-                    var row = Rows[r];
-                    if (row.CellsPresenter?.Cells is { })
-                    {
-                        var cell = row.CellsPresenter.Cells[c];
-                        var width = cell.DesiredSize.Width;
-                        ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
-                    }
-                }
+        var totalWidth = 0.0;
+        var totalHeight = 0.0;
 
-                totalWidth += ColumnWidths[c];
-            }
-
+        for (var c = 0; c < Columns.Count; c++)
+        {
             for (var r = 0; r < Rows.Count; r++)
             {
                 var row = Rows[r];
-                var height = row.DesiredSize.Height;
-                totalHeight += height;
-            }
-
-            bool hasStarColumn = false;
-            
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                var column = Columns[c];
-
-                switch (column.Width.GridUnitType)
+                if (row.CellsPresenter?.Cells is { })
                 {
-                    case GridUnitType.Star:
-                        hasStarColumn = true;
-                        break;
+                    var cell = row.CellsPresenter.Cells[c];
+                    var width = cell.DesiredSize.Width;
+                    ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
                 }
             }
-            
-            // var size = new Size(totalWidth, totalHeight);
-            var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
-            // Debug.WriteLine($"[MeasureOverride] size='{size}'");
-            return size;
+
+            totalWidth += ColumnWidths[c];
         }
 
-        return base.MeasureOverride(availableSize);
+        for (var r = 0; r < Rows.Count; r++)
+        {
+            var row = Rows[r];
+            var height = row.DesiredSize.Height;
+            totalHeight += height;
+        }
+
+        bool hasStarColumn = false;
+
+        for (var c = 0; c < Columns.Count; c++)
+        {
+            var column = Columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Star:
+                    hasStarColumn = true;
+                    break;
+            }
+        }
+
+        // var size = new Size(totalWidth, totalHeight);
+        var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
+        // Debug.WriteLine($"[MeasureOverride] size='{size}'");
+        return size;
+    }
+
+    private Size ArrangeRows(Size finalSize)
+    {
+        if (Rows is null)
+        {
+            return finalSize;
+        }
+
+        SetFinalColumnWidths(finalSize.Width);
+
+        var offset = 0.0;
+        var finalSizeWidth = 0.0;
+        var totalWidth = GetTotalWidth();
+
+        foreach (var row in Rows)
+        {
+            row.Arrange(new Rect(0.0, offset, totalWidth, row.DesiredSize.Height));
+            offset += row.DesiredSize.Height;
+            finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
+        }
+
+        var size = new Size(finalSizeWidth, offset);
+        // Debug.WriteLine($"[ArrangeOverride] size='{size}'");
+        return size;
+    }
+    
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        return MeasureRows(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Rows is { })
-        {
-            SetFinalColumnWidths(finalSize.Width);
-
-            var offset = 0.0;
-            var finalSizeWidth = 0.0;
-            var totalWidth = GetTotalWidth();
-
-            foreach (var row in Rows)
-            {
-                row.Arrange(new Rect(0.0, offset, totalWidth, row.DesiredSize.Height));
-                offset += row.DesiredSize.Height;
-                finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
-            }
-
-            var size = new Size(finalSizeWidth, offset);
-            // Debug.WriteLine($"[ArrangeOverride] size='{size}'");
-            return size;
-        }
-
-        return base.ArrangeOverride(finalSize);
+        return ArrangeRows(finalSize);
     }
 
     private double GetTotalWidth()
