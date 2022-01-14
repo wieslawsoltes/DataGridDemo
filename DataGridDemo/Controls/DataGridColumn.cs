@@ -10,4 +10,5 @@ public class DataGridColumn
 
     [Content]
     public IDataTemplate? CellTemplate { get; set; }
+    internal int Index { get; set; }
 }
