@@ -11,78 +11,22 @@ namespace DataGridDemo.Controls;
 
 public class DataGrid : Control
 {
-    public List<DataGridColumn> Columns { get; set; }
-    public IList<object> Items { get; set; }
-    internal List<DataGridRow>? Rows;
-    internal double[] ColumnWidths;
+    public List<DataGridColumn>? Columns { get; set; }
+
+    public IList<object>? Items { get; set; }
+
+    internal List<DataGridRow>? Rows { get; set; }
+
+    internal double[]? ColumnWidths { get; set; }
 
     public DataGrid()
     {
-        Columns = new List<DataGridColumn>()
-        {
-            new DataGridColumn()
-            {
-                Width = new GridLength(1, GridUnitType.Star),
-                CellTemplate = new FuncDataTemplate(
-                    (o) => true, 
-                    (o, scope) => 
-                        new Border()
-                        {
-                            Background = Brushes.Red,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column0"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        }, 
-                    true),
-                Index = 0
-            },
-            new DataGridColumn()
-            {
-                //Width = new GridLength(1, GridUnitType.Auto),
-                Width = new GridLength(1, GridUnitType.Star),
-                CellTemplate = new FuncDataTemplate(
-                    (o) => true, 
-                    (o, scope) => 
-                        new Border()
-                        {
-                            Background = Brushes.Green,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column1"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        }, 
-                    true),
-                Index = 1
-            },
-            new DataGridColumn()
-            {
-                //Width = new GridLength(200, GridUnitType.Pixel),
-                Width = new GridLength(1, GridUnitType.Star),
-                CellTemplate = new FuncDataTemplate(
-                    (o) => true, 
-                    (o, scope) => 
-                        new Border()
-                        {
-                            Background = Brushes.Blue,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column2"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        }, 
-                    true),
-                Index = 2
-            },
-        };
+        CreateColumns();
+        CreateItems();
+    }
 
-        ColumnWidths = new double[Columns.Count];
-
+    private void CreateItems()
+    {
         Items = new List<object>();
 
         for (var i = 0; i < 50; i++)
@@ -93,56 +37,135 @@ public class DataGrid : Control
                 Column1 = $"Column {i}-1",
                 Column2 = $"Column {i}-2",
             };
-                
+
             Items.Add(item);
         }
     }
 
+    private void CreateColumns()
+    {
+        Columns = new List<DataGridColumn>()
+        {
+            new DataGridColumn()
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                CellTemplate = new FuncDataTemplate(
+                    (_) => true,
+                    (o, _) =>
+                        new Border()
+                        {
+                            Background = Brushes.Red,
+                            Child = new TextBlock
+                            {
+                                [!TextBlock.TextProperty] = new Binding("Column0"),
+                                Margin = new Thickness(5),
+                                DataContext = o
+                            }
+                        },
+                    true),
+                Index = 0
+            },
+            new DataGridColumn()
+            {
+                // Width = new GridLength(1, GridUnitType.Auto),
+                Width = new GridLength(1, GridUnitType.Star),
+                CellTemplate = new FuncDataTemplate(
+                    (_) => true,
+                    (o, _) =>
+                        new Border()
+                        {
+                            Background = Brushes.Green,
+                            Child = new TextBlock
+                            {
+                                [!TextBlock.TextProperty] = new Binding("Column1"),
+                                Margin = new Thickness(5),
+                                DataContext = o
+                            }
+                        },
+                    true),
+                Index = 1
+            },
+            new DataGridColumn()
+            {
+                // Width = new GridLength(200, GridUnitType.Pixel),
+                Width = new GridLength(1, GridUnitType.Star),
+                CellTemplate = new FuncDataTemplate(
+                    (_) => true,
+                    (o, _) =>
+                        new Border()
+                        {
+                            Background = Brushes.Blue,
+                            Child = new TextBlock
+                            {
+                                [!TextBlock.TextProperty] = new Binding("Column2"),
+                                Margin = new Thickness(5),
+                                DataContext = o
+                            }
+                        },
+                    true),
+                Index = 2
+            },
+        };
+    }
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {            
-        if (Rows == null)
-        {
-            Rows = new List<DataGridRow>();
-
-            foreach (var item in Items)
-            {
-                var row = new DataGridRow()
-                {
-                    Cells = new List<DataGridCell>(),
-                    DataGrid = this
-                };
-
-                foreach (var column in Columns)
-                {
-                    var cell = new DataGridCell()
-                    {
-                        Column = column,
-                        Child = column.CellTemplate?.Build(item),
-                        DataGrid = this
-                    };
-                    row.Cells.Add(cell);
-                }
-                    
-                Rows.Add(row);
-            }
-        }
-
-        if (Rows is { })
-        {
-            foreach (var row in Rows)
-            {
-                ((ISetLogicalParent)row).SetParent(this);
-                VisualChildren.Add(row);
-                LogicalChildren.Add(row);
-            }
-        }
+    {
+        CreateRows();
 
         base.OnAttachedToVisualTree(e);
     }
-        
+
+    private void CreateRows()
+    {
+        if (Rows != null || Items is null || Columns is null)
+        {
+            return;
+        }
+
+        Rows = new List<DataGridRow>();
+
+        foreach (var item in Items)
+        {
+            var row = new DataGridRow() { Cells = new List<DataGridCell>(), DataGrid = this };
+
+            foreach (var column in Columns)
+            {
+                var cell = new DataGridCell()
+                {
+                    Column = column, Child = column.CellTemplate?.Build(item), DataGrid = this
+                };
+                row.Cells.Add(cell);
+            }
+
+            Rows.Add(row);
+        }
+
+        AddRows();
+    }
+
+    private void AddRows()
+    {
+        if (Rows is null)
+        {
+            return;
+        }
+
+        foreach (var row in Rows)
+        {
+            ((ISetLogicalParent)row).SetParent(this);
+            VisualChildren.Add(row);
+            LogicalChildren.Add(row);
+        }
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (Rows is { })
+        if (ColumnWidths is null && Columns is { })
+        {
+            ColumnWidths = new double[Columns.Count];
+        }
+
+        if (Rows is { } && Columns is { } && ColumnWidths is { })
         {
             foreach (var row in Rows)
             {
@@ -157,9 +180,12 @@ public class DataGrid : Control
                 for (var r = 0; r < Rows.Count; r++)
                 {
                     var row = Rows[r];
-                    var cell = row.Cells[c];
-                    var width = cell.DesiredSize.Width;
-                    ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
+                    if (row.Cells is { })
+                    {
+                        var cell = row.Cells[c];
+                        var width = cell.DesiredSize.Width;
+                        ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
+                    }
                 }
 
                 totalWidth += ColumnWidths[c];
@@ -173,7 +199,6 @@ public class DataGrid : Control
             }
 
             return new Size(totalWidth, totalHeight);
-            //return base.MeasureOverride(new Size(totalWidth, totalHeight));
         }
 
         return base.MeasureOverride(availableSize);
@@ -192,9 +217,7 @@ public class DataGrid : Control
             foreach (var row in Rows)
             {
                 row.Arrange(new Rect(0.0, offset, totalWidth, row.DesiredSize.Height));
-                //row.Arrange(new Rect(0.0, offset, row.DesiredSize.Width, row.DesiredSize.Height));
                 offset += row.DesiredSize.Height;
-                //width = Math.Max(width, row.DesiredSize.Width);
                 finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
             }
 
@@ -210,9 +233,12 @@ public class DataGrid : Control
     {
         var totalWidth = 0.0;
 
-        for (var c = 0; c < Columns.Count; c++)
+        if (Columns is { } && ColumnWidths is { })
         {
-            totalWidth += ColumnWidths[c];
+            for (var c = 0; c < Columns.Count; c++)
+            {
+                totalWidth += ColumnWidths[c];
+            }
         }
 
         return totalWidth;
@@ -220,6 +246,11 @@ public class DataGrid : Control
 
     private void SetFinalColumnWidths(double finalWidth)
     {
+        if (Columns is null || ColumnWidths is null)
+        {
+            return;
+        }
+        
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
 
