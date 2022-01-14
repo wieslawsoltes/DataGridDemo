@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
-using Avalonia.Media;
+using Avalonia.LogicalTree;
 using DataGridDemo.ViewModels;
 
 namespace DataGridDemo.Controls;
 
-public class DataGrid : Control
+public class DataGrid : TemplatedControl, IChildIndexProvider
 {
     public List<DataGridColumn>? Columns { get; set; }
 
@@ -50,12 +50,14 @@ public class DataGrid : Control
             new DataGridColumn()
             {
                 Width = new GridLength(1, GridUnitType.Star),
+                //Width = new GridLength(1, GridUnitType.Auto),
+                //Width = new GridLength(200, GridUnitType.Pixel),
                 CellTemplate = new FuncDataTemplate(
                     (_) => true,
                     (o, _) =>
                         new Border()
                         {
-                            Background = Brushes.Red,
+                            //Background = Brushes.Red,
                             Child = new TextBlock
                             {
                                 [!TextBlock.TextProperty] = new Binding("Column0"),
@@ -68,14 +70,15 @@ public class DataGrid : Control
             },
             new DataGridColumn()
             {
-                // Width = new GridLength(1, GridUnitType.Auto),
                 Width = new GridLength(1, GridUnitType.Star),
+                //Width = new GridLength(1, GridUnitType.Auto),
+                //Width = new GridLength(200, GridUnitType.Pixel),
                 CellTemplate = new FuncDataTemplate(
                     (_) => true,
                     (o, _) =>
                         new Border()
                         {
-                            Background = Brushes.Green,
+                            //Background = Brushes.Green,
                             Child = new TextBlock
                             {
                                 [!TextBlock.TextProperty] = new Binding("Column1"),
@@ -88,14 +91,15 @@ public class DataGrid : Control
             },
             new DataGridColumn()
             {
-                // Width = new GridLength(200, GridUnitType.Pixel),
                 Width = new GridLength(1, GridUnitType.Star),
+                //Width = new GridLength(1, GridUnitType.Auto),
+                //Width = new GridLength(200, GridUnitType.Pixel),
                 CellTemplate = new FuncDataTemplate(
                     (_) => true,
                     (o, _) =>
                         new Border()
                         {
-                            Background = Brushes.Blue,
+                            //Background = Brushes.Blue,
                             Child = new TextBlock
                             {
                                 [!TextBlock.TextProperty] = new Binding("Column2"),
@@ -129,21 +133,9 @@ public class DataGrid : Control
         {
             var row = new DataGridRow()
             {
-                Cells = new List<DataGridCell>(), 
+                Item = item,
                 DataGrid = this
             };
-
-            foreach (var column in Columns)
-            {
-                var cell = new DataGridCell()
-                {
-                    Column = column, 
-                    Child = column.CellTemplate?.Build(item), 
-                    DataGrid = this
-                };
-
-                row.Cells.Add(cell);
-            }
 
             Rows.Add(row);
         }
@@ -188,9 +180,9 @@ public class DataGrid : Control
                 for (var r = 0; r < Rows.Count; r++)
                 {
                     var row = Rows[r];
-                    if (row.Cells is { })
+                    if (row.CellsPresenter?.Cells is { })
                     {
-                        var cell = row.Cells[c];
+                        var cell = row.CellsPresenter.Cells[c];
                         var width = cell.DesiredSize.Width;
                         ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
                     }
@@ -318,4 +310,22 @@ public class DataGrid : Control
             }
         }
     }
+
+    public int GetChildIndex(ILogical child)
+    {
+        if (Rows is { } && child is DataGridRow row)
+        {
+            return Rows.IndexOf(row);
+        }
+
+        return -1;
+    }
+
+    public bool TryGetTotalCount(out int count)
+    {
+        count = Rows?.Count ?? 0;
+        return true;
+    }
+
+    public event EventHandler<ChildIndexChangedEventArgs>? ChildIndexChanged;
 }

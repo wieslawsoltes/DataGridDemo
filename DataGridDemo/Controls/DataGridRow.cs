@@ -1,48 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 
 namespace DataGridDemo.Controls;
 
-public class DataGridRow : Control
+public class DataGridRow : TemplatedControl
 {
-    internal List<DataGridCell>? Cells { get; set; }
-
     internal DataGrid? DataGrid { get; set; }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        if (Cells is { })
-        {
-            foreach (var cell in Cells)
-            {
-                if (cell.Parent is null)
-                {
-                    ((ISetLogicalParent)cell).SetParent(this);
-                    VisualChildren.Add(cell);
-                    LogicalChildren.Add(cell);
-                }
-            }
-        }
+    internal object? Item { get; set; }
 
-        base.OnAttachedToVisualTree(e);
+    internal DataGridCellsPresenter? CellsPresenter { get; set; }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        CellsPresenter = e.NameScope.Find<DataGridCellsPresenter>("PART_CellsPresenter");
+
+        if (CellsPresenter is { })
+        {
+            CellsPresenter.Content = Item;
+            CellsPresenter.DataGrid = DataGrid;
+            CellsPresenter.CreateCells();
+        }
+        
+        base.OnApplyTemplate(e);
     }
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (Cells is { })
+        if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
         {
-            var width = 0.0;
-            var height = 0.0;
-            foreach (var cell in Cells)
-            {
-                cell.Measure(availableSize);
-                width += cell.DesiredSize.Width;
-                height = Math.Max(height, cell.DesiredSize.Height);
-            }
-
-            return new Size(width, height);
+            control.Measure(availableSize);
+            return control.DesiredSize;
         }
 
         return base.MeasureOverride(availableSize);
@@ -50,21 +39,11 @@ public class DataGridRow : Control
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Cells is { } && DataGrid?.ColumnWidths is { })
+        if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
         {
-            var offset = 0.0;
-            var height = 0.0;
-
-            for (var c = 0; c < Cells.Count; c++)
-            {
-                var cell = Cells[c];
-                var width = DataGrid.ColumnWidths[c];
-                cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
-                offset += width;
-                height = Math.Max(height, cell.DesiredSize.Height);
-            }
-
-            return new Size(offset, height);
+            var rect = new Rect(0, 0, finalSize.Width, finalSize.Height);
+            control.Arrange(rect);
+            return rect.Size;
         }
 
         return base.ArrangeOverride(finalSize);

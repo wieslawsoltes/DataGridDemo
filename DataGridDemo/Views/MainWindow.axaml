@@ -17,8 +17,21 @@
 
   <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
     
-    <c:DataGrid>
-
+    <c:DataGrid HorizontalAlignment="Stretch">
+      <c:DataGrid.Styles>
+        <Style Selector="c|DataGrid c|DataGridRow:nth-child(2n)">
+          <Setter Property="Background" Value="#fff8f8f8"/>
+        </Style>
+        <Style Selector="c|DataGridRow">
+          <Setter Property="Template">
+            <ControlTemplate>
+              <Border Background="{TemplateBinding Background}">
+                <c:DataGridCellsPresenter Name="PART_CellsPresenter" />
+              </Border>
+            </ControlTemplate>
+          </Setter>
+        </Style>
+      </c:DataGrid.Styles>
     </c:DataGrid>
 
   </ScrollViewer>
