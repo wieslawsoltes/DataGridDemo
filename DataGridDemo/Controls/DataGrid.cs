@@ -151,6 +151,7 @@ public class DataGrid : Control
 
             var totalWidth = 0.0;
             var totalHeight = 0.0;
+
             for (var c = 0; c < Columns.Count; c++)
             {
                 for (var r = 0; r < Rows.Count; r++)
@@ -182,52 +183,11 @@ public class DataGrid : Control
     {
         if (Rows is { })
         {
-            var totalStarSize = 0.0;
-            var totalPixelSize = 0.0;
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                var column = Columns[c];
+            SetFinalColumnWidths(finalSize.Width);
 
-                switch (column.Width.GridUnitType)
-                {
-                    case GridUnitType.Auto:
-                        totalPixelSize += ColumnWidths[c];
-                        break;
-                    case GridUnitType.Pixel:
-                        ColumnWidths[c] = column.Width.Value;
-                        totalPixelSize += ColumnWidths[c];
-                        break;
-                    case GridUnitType.Star:
-                        totalStarSize += column.Width.Value;
-                        break;
-                }
-            }
-
-            var starColumnsWidth = Math.Max(0, finalSize.Width - totalPixelSize);
-
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                var column = Columns[c];
-
-                switch (column.Width.GridUnitType)
-                {
-                    case GridUnitType.Star:
-                        var percentage = column.Width.Value / totalStarSize;
-                        var width = starColumnsWidth * percentage;
-                        ColumnWidths[c] = width;
-                        totalPixelSize += ColumnWidths[c];
-                        break;
-                }
-            }
-  
             var offset = 0.0;
             var finalSizeWidth = 0.0;
-
-            var totalWidth = 0.0;
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                totalWidth += ColumnWidths[c];
-            }
+            var totalWidth = GetTotalWidth();
 
             foreach (var row in Rows)
             {
@@ -243,6 +203,60 @@ public class DataGrid : Control
         else
         {
             return base.ArrangeOverride(finalSize);
+        }
+    }
+
+    private double GetTotalWidth()
+    {
+        var totalWidth = 0.0;
+
+        for (var c = 0; c < Columns.Count; c++)
+        {
+            totalWidth += ColumnWidths[c];
+        }
+
+        return totalWidth;
+    }
+
+    private void SetFinalColumnWidths(double finalWidth)
+    {
+        var totalStarSize = 0.0;
+        var totalPixelSize = 0.0;
+
+        for (var c = 0; c < Columns.Count; c++)
+        {
+            var column = Columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Auto:
+                    totalPixelSize += ColumnWidths[c];
+                    break;
+                case GridUnitType.Pixel:
+                    ColumnWidths[c] = column.Width.Value;
+                    totalPixelSize += ColumnWidths[c];
+                    break;
+                case GridUnitType.Star:
+                    totalStarSize += column.Width.Value;
+                    break;
+            }
+        }
+
+        var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
+
+        for (var c = 0; c < Columns.Count; c++)
+        {
+            var column = Columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Star:
+                    var percentage = column.Width.Value / totalStarSize;
+                    var width = starColumnsWidth * percentage;
+                    ColumnWidths[c] = width;
+                    totalPixelSize += ColumnWidths[c];
+                    break;
+            }
         }
     }
 }
