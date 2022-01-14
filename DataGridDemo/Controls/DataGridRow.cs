@@ -8,6 +8,7 @@ namespace DataGridDemo.Controls;
 public class DataGridRow : Control
 {
     internal List<DataGridCell>? Cells { get; set; }
+
     internal DataGrid? DataGrid { get; set; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -43,15 +44,13 @@ public class DataGridRow : Control
 
             return new Size(width, height);
         }
-        else
-        {
-            return base.MeasureOverride(availableSize);
-        }
+
+        return base.MeasureOverride(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Cells is { })
+        if (Cells is { } && DataGrid?.ColumnWidths is { })
         {
             var offset = 0.0;
             var height = 0.0;
@@ -62,16 +61,12 @@ public class DataGridRow : Control
                 var width = DataGrid.ColumnWidths[c];
                 cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
                 offset += width;
-                //cell.Arrange(new Rect(offset, 0.0, cell.DesiredSize.Width, cell.DesiredSize.Height));
-                //offset += cell.DesiredSize.Width;
                 height = Math.Max(height, cell.DesiredSize.Height);
             }
 
             return new Size(offset, height);
         }
-        else
-        {
-            return base.ArrangeOverride(finalSize);    
-        }
+
+        return base.ArrangeOverride(finalSize);
     }
 }
