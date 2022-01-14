@@ -46,44 +46,55 @@ public class DataGridCellsPresenter : Control
         }
     }
 
-    protected override Size MeasureOverride(Size availableSize)
+    private Size MeasureCells(Size availableSize)
     {
-        if (Cells is { })
+        if (Cells is null)
         {
-            var width = 0.0;
-            var height = 0.0;
-            foreach (var cell in Cells)
-            {
-                cell.Measure(availableSize);
-                width += cell.DesiredSize.Width;
-                height = Math.Max(height, cell.DesiredSize.Height);
-            }
-
-            return new Size(width, height);
+            return availableSize;
         }
 
-        return base.MeasureOverride(availableSize);
+        var width = 0.0;
+        var height = 0.0;
+        foreach (var cell in Cells)
+        {
+            cell.Measure(availableSize);
+            width += cell.DesiredSize.Width;
+            height = Math.Max(height, cell.DesiredSize.Height);
+        }
+
+        return new Size(width, height);
+    }
+
+
+    private Size ArrangeCells(Size finalSize)
+    {
+        if (Cells is null || DataGrid?.ColumnWidths is null)
+        {
+            return finalSize;
+        }
+
+        var offset = 0.0;
+        var height = 0.0;
+
+        for (var c = 0; c < Cells.Count; c++)
+        {
+            var cell = Cells[c];
+            var width = DataGrid.ColumnWidths[c];
+            cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
+            offset += width;
+            height = Math.Max(height, cell.DesiredSize.Height);
+        }
+
+        return new Size(offset, height);
+    }
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        return MeasureCells(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Cells is { } && DataGrid?.ColumnWidths is { })
-        {
-            var offset = 0.0;
-            var height = 0.0;
-
-            for (var c = 0; c < Cells.Count; c++)
-            {
-                var cell = Cells[c];
-                var width = DataGrid.ColumnWidths[c];
-                cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
-                offset += width;
-                height = Math.Max(height, cell.DesiredSize.Height);
-            }
-
-            return new Size(offset, height);
-        }
-
-        return base.ArrangeOverride(finalSize);
+        return ArrangeCells(finalSize);
     }
 }
