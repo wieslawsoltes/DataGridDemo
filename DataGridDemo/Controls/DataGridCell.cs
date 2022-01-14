@@ -6,7 +6,9 @@ namespace DataGridDemo.Controls;
 public class DataGridCell : Control
 {
     internal DataGridColumn? Column { get; set; }
+
     internal IControl? Child { get; set; }
+
     internal DataGrid? DataGrid { get; set; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -28,18 +30,15 @@ public class DataGridCell : Control
             Child.Measure(availableSize);
             return Child.DesiredSize;
         }
-        else
-        {
-            return base.MeasureOverride(availableSize);
-        }
+
+        return base.MeasureOverride(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Child is { })
+        if (Child is { } && Column is { } &&  DataGrid?.ColumnWidths is { })
         {
             var width = DataGrid.ColumnWidths[Column.Index];
-            //var rect = new Rect(0, 0, Child.DesiredSize.Width, Child.DesiredSize.Height);
             var rect = new Rect(0, 0, width, Child.DesiredSize.Height);
             Child.Arrange(rect);
             return rect.Size;
