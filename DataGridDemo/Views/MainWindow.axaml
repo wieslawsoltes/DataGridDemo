@@ -3,7 +3,7 @@
         xmlns:vm="using:DataGridDemo.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:c="clr-namespace:DataGridDemo"
+        xmlns:c="clr-namespace:DataGridDemo.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DataGridDemo.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
