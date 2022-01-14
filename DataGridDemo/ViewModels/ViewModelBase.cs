@@ -1,8 +1,7 @@
 ﻿using ReactiveUI;
 
-namespace DataGridDemo.ViewModels
+namespace DataGridDemo.ViewModels;
+
+public class ViewModelBase : ReactiveObject
 {
-    public class ViewModelBase : ReactiveObject
-    {
-    }
 }

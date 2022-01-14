@@ -1,7 +1,6 @@
 ﻿
-namespace DataGridDemo.ViewModels
+namespace DataGridDemo.ViewModels;
+
+public class MainWindowViewModel : ViewModelBase
 {
-    public class MainWindowViewModel : ViewModelBase
-    {
-    }
 }
