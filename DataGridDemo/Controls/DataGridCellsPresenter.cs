@@ -68,7 +68,7 @@ public class DataGridCellsPresenter : Control
 
     private Size ArrangeCells(Size finalSize)
     {
-        if (Cells is null || DataGrid?.ColumnWidths is null)
+        if (Cells is null)
         {
             return finalSize;
         }
@@ -79,7 +79,12 @@ public class DataGridCellsPresenter : Control
         for (var c = 0; c < Cells.Count; c++)
         {
             var cell = Cells[c];
-            var width = DataGrid.ColumnWidths[c];
+            var column = cell.Column;
+            if (column is null)
+            {
+                continue;
+            }
+            var width = column.MeasureWidth;
             cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
             offset += width;
             height = Math.Max(height, cell.DesiredSize.Height);

@@ -12,4 +12,6 @@ public class DataGridColumn
     public IDataTemplate? CellTemplate { get; set; }
 
     internal int Index { get; set; }
+
+    internal double MeasureWidth { get; set; }
 }

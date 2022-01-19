@@ -18,8 +18,6 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     internal List<DataGridRow>? Rows { get; set; }
 
-    internal double[]? ColumnWidths { get; set; }
-
     public DataGrid()
     {
         CreateColumns();
@@ -160,12 +158,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private Size MeasureRows(Size availableSize)
     {
-        if (ColumnWidths is null && Columns is { })
-        {
-            ColumnWidths = new double[Columns.Count];
-        }
-
-        if (Rows is null || Columns is null || ColumnWidths is null)
+        if (Rows is null || Columns is null)
         {
             return availableSize;
         }
@@ -180,6 +173,8 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
         for (var c = 0; c < Columns.Count; c++)
         {
+            var column = Columns[c];
+
             for (var r = 0; r < Rows.Count; r++)
             {
                 var row = Rows[r];
@@ -187,11 +182,11 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
                 {
                     var cell = row.CellsPresenter.Cells[c];
                     var width = cell.DesiredSize.Width;
-                    ColumnWidths[c] = Math.Max(ColumnWidths[c], width);
+                    column.MeasureWidth = Math.Max(column.MeasureWidth, width);
                 }
             }
 
-            totalWidth += ColumnWidths[c];
+            totalWidth += column.MeasureWidth;
         }
 
         for (var r = 0; r < Rows.Count; r++)
@@ -260,11 +255,13 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
     {
         var totalWidth = 0.0;
 
-        if (Columns is { } && ColumnWidths is { })
+        if (Columns is { })
         {
             for (var c = 0; c < Columns.Count; c++)
             {
-                totalWidth += ColumnWidths[c];
+                var column = Columns[c];
+
+                totalWidth += column.MeasureWidth;
             }
         }
 
@@ -273,7 +270,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private void SetFinalColumnWidths(double finalWidth)
     {
-        if (Columns is null || ColumnWidths is null)
+        if (Columns is null)
         {
             return;
         }
@@ -288,11 +285,11 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
             switch (column.Width.GridUnitType)
             {
                 case GridUnitType.Auto:
-                    totalPixelSize += ColumnWidths[c];
+                    totalPixelSize += column.MeasureWidth;
                     break;
                 case GridUnitType.Pixel:
-                    ColumnWidths[c] = column.Width.Value;
-                    totalPixelSize += ColumnWidths[c];
+                    column.MeasureWidth = column.Width.Value;
+                    totalPixelSize += column.MeasureWidth;
                     break;
                 case GridUnitType.Star:
                     totalStarSize += column.Width.Value;
@@ -314,8 +311,8 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
                     var percentage = column.Width.Value / totalStarSize;
                     var width = starColumnsWidth * percentage;
                     // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
-                    ColumnWidths[c] = width;
-                    totalPixelSize += ColumnWidths[c];
+                    column.MeasureWidth = width;
+                    totalPixelSize += column.MeasureWidth;
                     break;
             }
         }

@@ -36,9 +36,9 @@ public class DataGridCell : Control
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Child is { } && Column is { } &&  DataGrid?.ColumnWidths is { })
+        if (Child is { } && Column is { })
         {
-            var width = DataGrid.ColumnWidths[Column.Index];
+            var width = Column.MeasureWidth;
             var rect = new Rect(0, 0, width, Child.DesiredSize.Height);
             Child.Arrange(rect);
             return rect.Size;
