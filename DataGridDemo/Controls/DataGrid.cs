@@ -156,6 +156,22 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
+    private void MeasureColumnCells(DataGridColumn column, List<DataGridRow> rows)
+    {
+        int columnIndex = column.Index;
+
+        for (var r = 0; r < rows.Count; r++)
+        {
+            var row = rows[r];
+            if (row.CellsPresenter?.Cells is { })
+            {
+                var cell = row.CellsPresenter.Cells[columnIndex];
+                var width = cell.DesiredSize.Width;
+                column.MeasureWidth = Math.Max(column.MeasureWidth, width);
+            }
+        }
+    }
+
     private Size MeasureRows(Size availableSize)
     {
         if (Rows is null || Columns is null)
@@ -175,16 +191,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         {
             var column = Columns[c];
 
-            for (var r = 0; r < Rows.Count; r++)
-            {
-                var row = Rows[r];
-                if (row.CellsPresenter?.Cells is { })
-                {
-                    var cell = row.CellsPresenter.Cells[c];
-                    var width = cell.DesiredSize.Width;
-                    column.MeasureWidth = Math.Max(column.MeasureWidth, width);
-                }
-            }
+            MeasureColumnCells(column, Rows);
 
             totalWidth += column.MeasureWidth;
         }
