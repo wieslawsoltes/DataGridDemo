@@ -156,6 +156,25 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
+    private bool HasStarColumn(List<DataGridColumn> columns)
+    {
+        bool hasStarColumn = false;
+
+        for (var c = 0; c < columns.Count; c++)
+        {
+            var column = columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Star:
+                    hasStarColumn = true;
+                    break;
+            }
+        }
+
+        return hasStarColumn;
+    }
+
     private void MeasureColumnCells(DataGridColumn column, List<DataGridRow> rows)
     {
         int columnIndex = column.Index;
@@ -168,6 +187,68 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
                 var cell = row.CellsPresenter.Cells[columnIndex];
                 var width = cell.DesiredSize.Width;
                 column.MeasureWidth = Math.Max(column.MeasureWidth, width);
+            }
+        }
+    }
+
+    private double GetTotalWidth()
+    {
+        var totalWidth = 0.0;
+
+        if (Columns is { })
+        {
+            for (var c = 0; c < Columns.Count; c++)
+            {
+                var column = Columns[c];
+
+                totalWidth += column.MeasureWidth;
+            }
+        }
+
+        return totalWidth;
+    }
+
+    private void CalculateColumnWidths(List<DataGridColumn> columns, double finalWidth)
+    {
+        var totalStarSize = 0.0;
+        var totalPixelSize = 0.0;
+
+        for (var c = 0; c < columns.Count; c++)
+        {
+            var column = columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Auto:
+                    totalPixelSize += column.MeasureWidth;
+                    break;
+                case GridUnitType.Pixel:
+                    column.MeasureWidth = column.Width.Value;
+                    totalPixelSize += column.MeasureWidth;
+                    break;
+                case GridUnitType.Star:
+                    totalStarSize += column.Width.Value;
+                    break;
+            }
+        }
+
+        var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
+
+        // Debug.WriteLine($"starColumnsWidth='{starColumnsWidth}', finalWidth='{finalWidth}', totalPixelSize='{totalPixelSize}', totalStarSize='{totalStarSize}'");
+
+        for (var c = 0; c < columns.Count; c++)
+        {
+            var column = columns[c];
+
+            switch (column.Width.GridUnitType)
+            {
+                case GridUnitType.Star:
+                    var percentage = column.Width.Value / totalStarSize;
+                    var width = starColumnsWidth * percentage;
+                    // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
+                    column.MeasureWidth = width;
+                    totalPixelSize += column.MeasureWidth;
+                    break;
             }
         }
     }
@@ -203,19 +284,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
             totalHeight += height;
         }
 
-        bool hasStarColumn = false;
-
-        for (var c = 0; c < Columns.Count; c++)
-        {
-            var column = Columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Star:
-                    hasStarColumn = true;
-                    break;
-            }
-        }
+        var hasStarColumn = HasStarColumn(Columns);
 
         // var size = new Size(totalWidth, totalHeight);
         var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
@@ -230,7 +299,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
             return finalSize;
         }
 
-        SetFinalColumnWidths(finalSize.Width);
+        CalculateColumnWidths(finalSize.Width);
 
         var offset = 0.0;
         var finalSizeWidth = 0.0;
@@ -256,73 +325,6 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
     protected override Size ArrangeOverride(Size finalSize)
     {
         return ArrangeRows(finalSize);
-    }
-
-    private double GetTotalWidth()
-    {
-        var totalWidth = 0.0;
-
-        if (Columns is { })
-        {
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                var column = Columns[c];
-
-                totalWidth += column.MeasureWidth;
-            }
-        }
-
-        return totalWidth;
-    }
-
-    private void SetFinalColumnWidths(double finalWidth)
-    {
-        if (Columns is null)
-        {
-            return;
-        }
-        
-        var totalStarSize = 0.0;
-        var totalPixelSize = 0.0;
-
-        for (var c = 0; c < Columns.Count; c++)
-        {
-            var column = Columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Auto:
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-                case GridUnitType.Pixel:
-                    column.MeasureWidth = column.Width.Value;
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-                case GridUnitType.Star:
-                    totalStarSize += column.Width.Value;
-                    break;
-            }
-        }
-
-        var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
-
-        // Debug.WriteLine($"starColumnsWidth='{starColumnsWidth}', finalWidth='{finalWidth}', totalPixelSize='{totalPixelSize}', totalStarSize='{totalStarSize}'");
-
-        for (var c = 0; c < Columns.Count; c++)
-        {
-            var column = Columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Star:
-                    var percentage = column.Width.Value / totalStarSize;
-                    var width = starColumnsWidth * percentage;
-                    // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
-                    column.MeasureWidth = width;
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-            }
-        }
     }
 
     public int GetChildIndex(ILogical child)
