@@ -191,21 +191,18 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
-    private double GetTotalWidth()
+    private double GetTotalMeasureWidth(List<DataGridColumn> columns)
     {
-        var totalWidth = 0.0;
-
-        if (Columns is { })
+        var totalMeasureWidth = 0.0;
+        
+        for (var c = 0; c < columns.Count; c++)
         {
-            for (var c = 0; c < Columns.Count; c++)
-            {
-                var column = Columns[c];
+            var column = columns[c];
 
-                totalWidth += column.MeasureWidth;
-            }
+            totalMeasureWidth += column.MeasureWidth;
         }
 
-        return totalWidth;
+        return totalMeasureWidth;
     }
 
     private void CalculateColumnWidths(List<DataGridColumn> columns, double finalWidth)
@@ -286,37 +283,50 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
         var hasStarColumn = HasStarColumn(Columns);
 
-        // var size = new Size(totalWidth, totalHeight);
         var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
-        // Debug.WriteLine($"[MeasureOverride] size='{size}'");
+        // Debug.WriteLine($"[MeasureRows] size='{size}'");
         return size;
     }
 
-    private Size ArrangeRows(Size finalSize)
+    private Size ArrangeRows(List<DataGridRow> rows, double totalWidth)
     {
-        if (Rows is null)
-        {
-            return finalSize;
-        }
-
-        CalculateColumnWidths(finalSize.Width);
-
         var offset = 0.0;
         var finalSizeWidth = 0.0;
-        var totalWidth = GetTotalWidth();
 
-        foreach (var row in Rows)
+        foreach (var row in rows)
         {
-            row.Arrange(new Rect(0.0, offset, totalWidth, row.DesiredSize.Height));
+            var rect = new Rect(
+                0.0, 
+                offset, 
+                totalWidth, 
+                row.DesiredSize.Height);
+
+            row.Arrange(rect);
+
             offset += row.DesiredSize.Height;
             finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
         }
 
-        var size = new Size(finalSizeWidth, offset);
-        // Debug.WriteLine($"[ArrangeOverride] size='{size}'");
+        return new Size(finalSizeWidth, offset);
+    }
+
+    private Size ArrangeRows(Size finalSize)
+    {
+        if (Rows is null || Columns is null)
+        {
+            return finalSize;
+        }
+
+        CalculateColumnWidths(Columns, finalSize.Width);
+
+        var totalWidth = GetTotalMeasureWidth(Columns);
+
+        var size = ArrangeRows(Rows, totalWidth);
+
+        // Debug.WriteLine($"[ArrangeRows] size='{size}'");
         return size;
     }
-    
+
     protected override Size MeasureOverride(Size availableSize)
     {
         return MeasureRows(availableSize);
