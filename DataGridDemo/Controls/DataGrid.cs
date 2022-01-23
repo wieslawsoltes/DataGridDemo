@@ -1,126 +1,59 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Templates;
-using Avalonia.Data;
 using Avalonia.LogicalTree;
-using DataGridDemo.ViewModels;
 
 namespace DataGridDemo.Controls;
 
 public class DataGrid : TemplatedControl, IChildIndexProvider
 {
-    public List<DataGridColumn>? Columns { get; set; }
+    public static readonly DirectProperty<DataGrid, AvaloniaList<DataGridColumn>> ColumnsProperty = 
+        AvaloniaProperty.RegisterDirect<DataGrid, AvaloniaList<DataGridColumn>>(
+            nameof(Columns), 
+            o => o.Columns);
 
-    public IList<object>? Items { get; set; }
+    public static readonly DirectProperty<DataGrid, IList?> ItemsProperty = 
+        AvaloniaProperty.RegisterDirect<DataGrid, IList?>(
+            nameof(Items), 
+            o => o.Items, 
+            (o, v) => o.Items = v);
+
+    private AvaloniaList<DataGridColumn> _columns;
+    private IList? _items;
+
+    public AvaloniaList<DataGridColumn> Columns
+    {
+        get => _columns;
+        private set => SetAndRaise(ColumnsProperty, ref _columns, value);
+    }
+
+    public IList? Items
+    {
+        get => _items;
+        set => SetAndRaise(ItemsProperty, ref _items, value);
+    }
 
     internal List<DataGridRow>? Rows { get; set; }
 
     public DataGrid()
     {
-        CreateColumns();
-        CreateItems();
-    }
-
-    private void CreateItems()
-    {
-        Items = new List<object>();
-
-        for (var i = 0; i < 50; i++)
-        {
-            var item = new ItemViewModel()
-            {
-                Column0 = $"Column {i}-0",
-                Column1 = $"Column {i}-1",
-                Column2 = $"Column {i}-2",
-            };
-
-            Items.Add(item);
-        }
-    }
-
-    private void CreateColumns()
-    {
-        Columns = new List<DataGridColumn>()
-        {
-            new DataGridColumn()
-            {
-                Width = new GridLength(1, GridUnitType.Star),
-                //Width = new GridLength(1, GridUnitType.Auto),
-                //Width = new GridLength(200, GridUnitType.Pixel),
-                CellTemplate = new FuncDataTemplate(
-                    (_) => true,
-                    (o, _) =>
-                        new Border()
-                        {
-                            //Background = Brushes.Red,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column0"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        },
-                    true),
-                Index = 0
-            },
-            new DataGridColumn()
-            {
-                Width = new GridLength(1, GridUnitType.Star),
-                //Width = new GridLength(1, GridUnitType.Auto),
-                //Width = new GridLength(200, GridUnitType.Pixel),
-                CellTemplate = new FuncDataTemplate(
-                    (_) => true,
-                    (o, _) =>
-                        new Border()
-                        {
-                            //Background = Brushes.Green,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column1"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        },
-                    true),
-                Index = 1
-            },
-            new DataGridColumn()
-            {
-                Width = new GridLength(1, GridUnitType.Star),
-                //Width = new GridLength(1, GridUnitType.Auto),
-                //Width = new GridLength(200, GridUnitType.Pixel),
-                CellTemplate = new FuncDataTemplate(
-                    (_) => true,
-                    (o, _) =>
-                        new Border()
-                        {
-                            //Background = Brushes.Blue,
-                            Child = new TextBlock
-                            {
-                                [!TextBlock.TextProperty] = new Binding("Column2"),
-                                Margin = new Thickness(5),
-                                DataContext = o
-                            }
-                        },
-                    true),
-                Index = 2
-            },
-        };
+        _columns = new AvaloniaList<DataGridColumn>();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        CreateRows();
+        GenerateRows();
 
         base.OnAttachedToVisualTree(e);
     }
 
-    private void CreateRows()
+    private void GenerateRows()
     {
-        if (Rows != null || Items is null || Columns is null)
+        if (Rows != null || Items is null || Columns.Count <= 0)
         {
             return;
         }
@@ -131,8 +64,9 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         {
             var row = new DataGridRow()
             {
-                Item = item,
-                DataGrid = this
+                Content = item,
+                DataGrid = this,
+                DataContext = item
             };
 
             Rows.Add(row);
@@ -156,7 +90,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
-    private bool HasStarColumn(List<DataGridColumn> columns)
+    private bool HasStarColumn(IList<DataGridColumn> columns)
     {
         bool hasStarColumn = false;
 
@@ -191,7 +125,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
-    private double GetTotalMeasureWidth(List<DataGridColumn> columns)
+    private double GetTotalMeasureWidth(IList<DataGridColumn> columns)
     {
         var totalMeasureWidth = 0.0;
         
@@ -205,7 +139,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         return totalMeasureWidth;
     }
 
-    private void CalculateColumnWidths(List<DataGridColumn> columns, double finalWidth)
+    private void CalculateColumnWidths(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -252,7 +186,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private Size MeasureRows(Size availableSize)
     {
-        if (Rows is null || Columns is null)
+        if (Rows is null || Columns.Count <= 0)
         {
             return availableSize;
         }
@@ -312,7 +246,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private Size ArrangeRows(Size finalSize)
     {
-        if (Rows is null || Columns is null)
+        if (Rows is null || Columns.Count <= 0)
         {
             return finalSize;
         }

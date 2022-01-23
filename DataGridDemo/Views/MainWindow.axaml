@@ -17,7 +17,30 @@
 
   <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
     
-    <c:DataGrid HorizontalAlignment="Stretch">
+    <c:DataGrid Items="{Binding Items}" HorizontalAlignment="Stretch">
+      <c:DataGrid.Columns>
+        <c:DataGridColumn Width="*">
+          <DataTemplate DataType="vm:ItemViewModel">
+            <Border>
+              <TextBlock Text="{Binding Column0}"  Margin="5"/>
+            </Border>
+          </DataTemplate>
+        </c:DataGridColumn>
+        <c:DataGridColumn Width="*">
+          <DataTemplate DataType="vm:ItemViewModel">
+            <Border>
+              <TextBlock Text="{Binding Column1}"  Margin="5"/>
+            </Border>
+          </DataTemplate>
+        </c:DataGridColumn>
+        <c:DataGridColumn Width="*">
+          <DataTemplate DataType="vm:ItemViewModel">
+            <Border>
+              <TextBlock Text="{Binding Column2}"  Margin="5"/>
+            </Border>
+          </DataTemplate>
+        </c:DataGridColumn>
+      </c:DataGrid.Columns>
       <c:DataGrid.Styles>
         <Style Selector="c|DataGrid c|DataGridRow:nth-child(2n)">
           <Setter Property="Background" Value="#fff8f8f8"/>

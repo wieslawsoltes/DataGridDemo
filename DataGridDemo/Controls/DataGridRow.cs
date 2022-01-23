@@ -8,7 +8,7 @@ public class DataGridRow : TemplatedControl
 {
     internal DataGrid? DataGrid { get; set; }
 
-    internal object? Item { get; set; }
+    internal object? Content { get; set; }
 
     internal DataGridCellsPresenter? CellsPresenter { get; set; }
 
@@ -18,7 +18,7 @@ public class DataGridRow : TemplatedControl
 
         if (CellsPresenter is { })
         {
-            CellsPresenter.Content = Item;
+            CellsPresenter.Content = Content;
             CellsPresenter.DataGrid = DataGrid;
             CellsPresenter.CreateCells();
         }
