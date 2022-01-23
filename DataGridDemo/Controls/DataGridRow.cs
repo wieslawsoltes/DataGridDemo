@@ -28,23 +28,23 @@ public class DataGridRow : TemplatedControl
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
-        {
-            control.Measure(availableSize);
-            return control.DesiredSize;
-        }
+        //if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
+        //{
+        //    control.Measure(availableSize);
+        //    return control.DesiredSize;
+        //}
 
         return base.MeasureOverride(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
-        {
-            var rect = new Rect(0, 0, finalSize.Width, finalSize.Height);
-            control.Arrange(rect);
-            return rect.Size;
-        }
+        //if (VisualChildren.Count == 1 && VisualChildren[0] is IControl control)
+        //{
+        //    var rect = new Rect(0, 0, finalSize.Width, finalSize.Height);
+        //    control.Arrange(rect);
+        //    return rect.Size;
+        //}
 
         return base.ArrangeOverride(finalSize);
     }
