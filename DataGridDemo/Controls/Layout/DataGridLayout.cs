@@ -35,7 +35,7 @@ internal static class DataGridLayout
         return totalMeasureWidth;
     }
 
-    private static void SetColumnMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
+    private static void SetFinalColumnMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -119,7 +119,7 @@ internal static class DataGridLayout
 
         var finalWidth = finalSize.Width;
 
-        SetColumnMeasureWidth(columns, finalWidth);
+        SetFinalColumnMeasureWidth(columns, finalWidth);
 
         var totalWidth = GetTotalMeasureWidth(columns);
         var totalHeight = 0.0;
