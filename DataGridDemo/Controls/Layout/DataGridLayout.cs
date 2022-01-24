@@ -21,7 +21,7 @@ internal static class DataGridLayout
         return false;
     }
 
-    private static double GetTotalMeasureWidth(IList<DataGridColumn> columns)
+    private static double GetColumnsTotalMeasureWidth(IList<DataGridColumn> columns)
     {
         var totalMeasureWidth = 0.0;
 
@@ -35,7 +35,7 @@ internal static class DataGridLayout
         return totalMeasureWidth;
     }
 
-    private static void SetFinalColumnMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
+    private static void SetColumnsFinalMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -77,7 +77,7 @@ internal static class DataGridLayout
         }
     }
 
-    private static double GetTotalHeight(IList<DataGridRow> rows)
+    private static double GetTotalRowsHeight(IList<DataGridRow> rows)
     {
         var totalHeight = 0.0;
 
@@ -103,8 +103,8 @@ internal static class DataGridLayout
             row.Measure(availableSize);
         }
 
-        var totalWidth = GetTotalMeasureWidth(columns);
-        var totalHeight = GetTotalHeight(rows);
+        var totalWidth = GetColumnsTotalMeasureWidth(columns);
+        var totalHeight = GetTotalRowsHeight(rows);
         var hasStarColumn = HasStarColumn(columns);
 
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
@@ -119,9 +119,9 @@ internal static class DataGridLayout
 
         var finalWidth = finalSize.Width;
 
-        SetFinalColumnMeasureWidth(columns, finalWidth);
+        SetColumnsFinalMeasureWidth(columns, finalWidth);
 
-        var totalWidth = GetTotalMeasureWidth(columns);
+        var totalWidth = GetColumnsTotalMeasureWidth(columns);
         var totalHeight = 0.0;
         var maxWidth = 0.0;
 
