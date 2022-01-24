@@ -39,7 +39,8 @@ public class DataGridCell : Control
         if (Child is { } && Column is { })
         {
             var width = Column.MeasureWidth;
-            var rect = new Rect(0, 0, width, Child.DesiredSize.Height);
+            var height = Child.DesiredSize.Height;
+            var rect = new Rect(0, 0, width, height);
             Child.Arrange(rect);
             return rect.Size;
         }

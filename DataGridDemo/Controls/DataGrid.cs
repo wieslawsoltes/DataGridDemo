@@ -6,6 +6,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.LogicalTree;
+using DataGridDemo.Controls.Layout;
 
 namespace DataGridDemo.Controls;
 
@@ -24,6 +25,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private AvaloniaList<DataGridColumn> _columns;
     private IList? _items;
+    private readonly DataGridLayout _dataGridLayout;
 
     public AvaloniaList<DataGridColumn> Columns
     {
@@ -42,6 +44,7 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
     public DataGrid()
     {
         _columns = new AvaloniaList<DataGridColumn>();
+        _dataGridLayout = new DataGridLayout(this);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -72,16 +75,6 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
             Rows.Add(row);
         }
 
-        AddRows();
-    }
-
-    private void AddRows()
-    {
-        if (Rows is null)
-        {
-            return;
-        }
-
         foreach (var row in Rows)
         {
             ((ISetLogicalParent)row).SetParent(this);
@@ -90,188 +83,17 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         }
     }
 
-    private bool HasStarColumn(IList<DataGridColumn> columns)
-    {
-        bool hasStarColumn = false;
-
-        for (var c = 0; c < columns.Count; c++)
-        {
-            var column = columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Star:
-                    hasStarColumn = true;
-                    break;
-            }
-        }
-
-        return hasStarColumn;
-    }
-
-    private void MeasureColumnCells(DataGridColumn column, List<DataGridRow> rows)
-    {
-        int columnIndex = column.Index;
-
-        for (var r = 0; r < rows.Count; r++)
-        {
-            var row = rows[r];
-            if (row.CellsPresenter?.Cells is { })
-            {
-                var cell = row.CellsPresenter.Cells[columnIndex];
-                var width = cell.DesiredSize.Width;
-                column.MeasureWidth = Math.Max(column.MeasureWidth, width);
-            }
-        }
-    }
-
-    private double GetTotalMeasureWidth(IList<DataGridColumn> columns)
-    {
-        var totalMeasureWidth = 0.0;
-        
-        for (var c = 0; c < columns.Count; c++)
-        {
-            var column = columns[c];
-
-            totalMeasureWidth += column.MeasureWidth;
-        }
-
-        return totalMeasureWidth;
-    }
-
-    private void CalculateColumnWidths(IList<DataGridColumn> columns, double finalWidth)
-    {
-        var totalStarSize = 0.0;
-        var totalPixelSize = 0.0;
-
-        for (var c = 0; c < columns.Count; c++)
-        {
-            var column = columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Auto:
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-                case GridUnitType.Pixel:
-                    column.MeasureWidth = column.Width.Value;
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-                case GridUnitType.Star:
-                    totalStarSize += column.Width.Value;
-                    break;
-            }
-        }
-
-        var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
-
-        // Debug.WriteLine($"starColumnsWidth='{starColumnsWidth}', finalWidth='{finalWidth}', totalPixelSize='{totalPixelSize}', totalStarSize='{totalStarSize}'");
-
-        for (var c = 0; c < columns.Count; c++)
-        {
-            var column = columns[c];
-
-            switch (column.Width.GridUnitType)
-            {
-                case GridUnitType.Star:
-                    var percentage = column.Width.Value / totalStarSize;
-                    var width = starColumnsWidth * percentage;
-                    // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
-                    column.MeasureWidth = width;
-                    totalPixelSize += column.MeasureWidth;
-                    break;
-            }
-        }
-    }
-
-    private Size MeasureRows(Size availableSize)
-    {
-        if (Rows is null || Columns.Count <= 0)
-        {
-            return availableSize;
-        }
-
-        foreach (var row in Rows)
-        {
-            row.Measure(availableSize);
-        }
-
-        var totalWidth = 0.0;
-        var totalHeight = 0.0;
-
-        for (var c = 0; c < Columns.Count; c++)
-        {
-            var column = Columns[c];
-
-            MeasureColumnCells(column, Rows);
-
-            totalWidth += column.MeasureWidth;
-        }
-
-        for (var r = 0; r < Rows.Count; r++)
-        {
-            var row = Rows[r];
-            var height = row.DesiredSize.Height;
-            totalHeight += height;
-        }
-
-        var hasStarColumn = HasStarColumn(Columns);
-
-        var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
-        // Debug.WriteLine($"[MeasureRows] size='{size}'");
-        return size;
-    }
-
-    private Size ArrangeRows(List<DataGridRow> rows, double totalWidth)
-    {
-        var offset = 0.0;
-        var finalSizeWidth = 0.0;
-
-        foreach (var row in rows)
-        {
-            var rect = new Rect(
-                0.0, 
-                offset, 
-                totalWidth, 
-                row.DesiredSize.Height);
-
-            row.Arrange(rect);
-
-            offset += row.DesiredSize.Height;
-            finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
-        }
-
-        return new Size(finalSizeWidth, offset);
-    }
-
-    private Size ArrangeRows(Size finalSize)
-    {
-        if (Rows is null || Columns.Count <= 0)
-        {
-            return finalSize;
-        }
-
-        CalculateColumnWidths(Columns, finalSize.Width);
-
-        var totalWidth = GetTotalMeasureWidth(Columns);
-
-        var size = ArrangeRows(Rows, totalWidth);
-
-        // Debug.WriteLine($"[ArrangeRows] size='{size}'");
-        return size;
-    }
-
     protected override Size MeasureOverride(Size availableSize)
     {
-        return MeasureRows(availableSize);
+        return _dataGridLayout.MeasureRows(availableSize);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return ArrangeRows(finalSize);
+        return _dataGridLayout.ArrangeRows(finalSize);
     }
 
-    public int GetChildIndex(ILogical child)
+    int IChildIndexProvider.GetChildIndex(ILogical child)
     {
         if (Rows is { } && child is DataGridRow row)
         {
@@ -281,11 +103,22 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         return -1;
     }
 
-    public bool TryGetTotalCount(out int count)
+    bool IChildIndexProvider.TryGetTotalCount(out int count)
     {
         count = Rows?.Count ?? 0;
         return true;
     }
 
-    public event EventHandler<ChildIndexChangedEventArgs>? ChildIndexChanged;
+    private EventHandler<ChildIndexChangedEventArgs>? _childIndexChanged;
+
+    event EventHandler<ChildIndexChangedEventArgs>? IChildIndexProvider.ChildIndexChanged
+    {
+        add => _childIndexChanged += value;
+        remove => _childIndexChanged -= value;
+    }
+
+    private void RaiseChildIndexChanged()
+    {
+        _childIndexChanged?.Invoke(this, new ChildIndexChangedEventArgs());
+    }
 }
