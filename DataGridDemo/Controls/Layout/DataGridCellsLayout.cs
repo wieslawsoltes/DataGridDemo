@@ -19,16 +19,17 @@ internal class DataGridCellsLayout
             return availableSize;
         }
 
-        var width = 0.0;
-        var height = 0.0;
+        var totalWidth = 0.0;
+        var maxHeight = 0.0;
+
         foreach (var cell in _dataGridCellsPresenter.Cells)
         {
             cell.Measure(availableSize);
-            width += cell.DesiredSize.Width;
-            height = Math.Max(height, cell.DesiredSize.Height);
+            totalWidth += cell.DesiredSize.Width;
+            maxHeight = Math.Max(maxHeight, cell.DesiredSize.Height);
         }
 
-        return new Size(width, height);
+        return new Size(totalWidth, maxHeight);
     }
 
     public Size ArrangeCells(Size finalSize)
@@ -38,8 +39,8 @@ internal class DataGridCellsLayout
             return finalSize;
         }
 
-        var offset = 0.0;
-        var height = 0.0;
+        var totalWidth = 0.0;
+        var maxHeight = 0.0;
 
         for (var c = 0; c < _dataGridCellsPresenter.Cells.Count; c++)
         {
@@ -50,11 +51,12 @@ internal class DataGridCellsLayout
                 continue;
             }
             var width = column.MeasureWidth;
-            cell.Arrange(new Rect(offset, 0.0, width, cell.DesiredSize.Height));
-            offset += width;
-            height = Math.Max(height, cell.DesiredSize.Height);
+            var height = cell.DesiredSize.Height;
+            cell.Arrange(new Rect(totalWidth, 0.0, width, height));
+            totalWidth += width;
+            maxHeight = Math.Max(maxHeight, height);
         }
 
-        return new Size(offset, height);
+        return new Size(totalWidth, maxHeight);
     }
 }
