@@ -1,20 +1,14 @@
 using System;
+using System.Collections.Generic;
 using Avalonia;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal class DataGridCellsLayout
+internal static class DataGridCellsLayout
 {
-    private readonly DataGridCellsPresenter _dataGridCellsPresenter;
-
-    public DataGridCellsLayout(DataGridCellsPresenter dataGridCellsPresenter)
+    public static Size MeasureCells(Size availableSize, IList<DataGridCell>? cells)
     {
-        _dataGridCellsPresenter = dataGridCellsPresenter;
-    }
-
-    public Size MeasureCells(Size availableSize)
-    {
-        if (_dataGridCellsPresenter.Cells is null)
+        if (cells is null)
         {
             return availableSize;
         }
@@ -22,7 +16,7 @@ internal class DataGridCellsLayout
         var totalWidth = 0.0;
         var maxHeight = 0.0;
 
-        foreach (var cell in _dataGridCellsPresenter.Cells)
+        foreach (var cell in cells)
         {
             cell.Measure(availableSize);
             totalWidth += cell.DesiredSize.Width;
@@ -32,9 +26,9 @@ internal class DataGridCellsLayout
         return new Size(totalWidth, maxHeight);
     }
 
-    public Size ArrangeCells(Size finalSize)
+    public static Size ArrangeCells(Size finalSize, IList<DataGridCell>? cells)
     {
-        if (_dataGridCellsPresenter.Cells is null)
+        if (cells is null)
         {
             return finalSize;
         }
@@ -42,9 +36,9 @@ internal class DataGridCellsLayout
         var totalWidth = 0.0;
         var maxHeight = 0.0;
 
-        for (var c = 0; c < _dataGridCellsPresenter.Cells.Count; c++)
+        for (var c = 0; c < cells.Count; c++)
         {
-            var cell = _dataGridCellsPresenter.Cells[c];
+            var cell = cells[c];
             var column = cell.Column;
             if (column is null)
             {

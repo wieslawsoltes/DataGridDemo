@@ -5,16 +5,9 @@ using Avalonia.Controls;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal class DataGridLayout
+internal static class DataGridLayout
 {
-    private readonly DataGrid _dataGrid;
-
-    public DataGridLayout(DataGrid dataGrid)
-    {
-        _dataGrid = dataGrid;
-    }
-
-    private bool HasStarColumn(IList<DataGridColumn> columns)
+    private static bool HasStarColumn(IList<DataGridColumn> columns)
     {
         for (var c = 0; c < columns.Count; c++)
         {
@@ -28,7 +21,7 @@ internal class DataGridLayout
         return false;
     }
 
-    private double GetTotalMeasureWidth(IList<DataGridColumn> columns)
+    private static double GetTotalMeasureWidth(IList<DataGridColumn> columns)
     {
         var totalMeasureWidth = 0.0;
 
@@ -42,7 +35,7 @@ internal class DataGridLayout
         return totalMeasureWidth;
     }
 
-    private void SetMeasureWidths(IList<DataGridColumn> columns, double finalWidth)
+    private static void SetColumnMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -84,7 +77,7 @@ internal class DataGridLayout
         }
     }
 
-    private double GetTotalHeight(IList<DataGridRow> rows)
+    private static double GetTotalHeight(IList<DataGridRow> rows)
     {
         var totalHeight = 0.0;
 
@@ -98,39 +91,41 @@ internal class DataGridLayout
         return totalHeight;
     }
 
-    public Size MeasureRows(Size availableSize)
+    public static Size MeasureRows(Size availableSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
     {
-        if (_dataGrid.Rows is null || _dataGrid.Columns.Count <= 0)
+        if (columns is null || columns.Count <= 0 || rows is null)
         {
             return availableSize;
         }
 
-        foreach (var row in _dataGrid.Rows)
+        foreach (var row in rows)
         {
             row.Measure(availableSize);
         }
 
-        var totalWidth = GetTotalMeasureWidth(_dataGrid.Columns);
-        var totalHeight = GetTotalHeight(_dataGrid.Rows);
-        var hasStarColumn = HasStarColumn(_dataGrid.Columns);
+        var totalWidth = GetTotalMeasureWidth(columns);
+        var totalHeight = GetTotalHeight(rows);
+        var hasStarColumn = HasStarColumn(columns);
 
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
     }
 
-    public Size ArrangeRows(Size finalSize)
+    public static Size ArrangeRows(Size finalSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
     {
-        if (_dataGrid.Rows is null || _dataGrid.Columns.Count <= 0)
+        if (columns is null || columns.Count <= 0 || rows is null)
         {
             return finalSize;
         }
 
-        SetMeasureWidths(_dataGrid.Columns, finalSize.Width);
+        var finalWidth = finalSize.Width;
 
-        var totalWidth = GetTotalMeasureWidth(_dataGrid.Columns);
+        SetColumnMeasureWidth(columns, finalWidth);
+
+        var totalWidth = GetTotalMeasureWidth(columns);
         var totalHeight = 0.0;
         var maxWidth = 0.0;
 
-        foreach (var row in _dataGrid.Rows)
+        foreach (var row in rows)
         {
             var height = row.DesiredSize.Height;
             var rect = new Rect(0.0, totalHeight, totalWidth, height);

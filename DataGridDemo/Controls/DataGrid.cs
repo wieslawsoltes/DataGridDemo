@@ -25,7 +25,6 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     private AvaloniaList<DataGridColumn> _columns;
     private IList? _items;
-    private readonly DataGridLayout _dataGridLayout;
 
     public AvaloniaList<DataGridColumn> Columns
     {
@@ -44,7 +43,6 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
     public DataGrid()
     {
         _columns = new AvaloniaList<DataGridColumn>();
-        _dataGridLayout = new DataGridLayout(this);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -85,12 +83,12 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return _dataGridLayout.MeasureRows(availableSize);
+        return DataGridLayout.MeasureRows(availableSize, Columns, Rows);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return _dataGridLayout.ArrangeRows(finalSize);
+        return DataGridLayout.ArrangeRows(finalSize, Columns, Rows);
     }
 
     int IChildIndexProvider.GetChildIndex(ILogical child)

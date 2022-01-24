@@ -7,18 +7,11 @@ namespace DataGridDemo.Controls;
 
 public class DataGridCellsPresenter : Control
 {
-    private readonly DataGridCellsLayout _dataGridCellsLayout;
-
     internal List<DataGridCell>? Cells { get; set; }
 
     internal DataGrid? DataGrid { get; set; }
 
     internal object? Content { get; set; }
-
-    public DataGridCellsPresenter()
-    {
-        _dataGridCellsLayout = new DataGridCellsLayout(this);
-    }
 
     internal void GenerateCells()
     {
@@ -56,11 +49,11 @@ public class DataGridCellsPresenter : Control
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return _dataGridCellsLayout.MeasureCells(availableSize);
+        return DataGridCellsLayout.MeasureCells(availableSize, Cells);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return _dataGridCellsLayout.ArrangeCells(finalSize);
+        return DataGridCellsLayout.ArrangeCells(finalSize, Cells);
     }
 }
