@@ -16,43 +16,22 @@ internal class DataGridLayout
 
     private bool HasStarColumn(IList<DataGridColumn> columns)
     {
-        bool hasStarColumn = false;
-
         for (var c = 0; c < columns.Count; c++)
         {
             var column = columns[c];
-
-            switch (column.Width.GridUnitType)
+            if (column.Width.GridUnitType == GridUnitType.Star)
             {
-                case GridUnitType.Star:
-                    hasStarColumn = true;
-                    break;
+                return true;
             }
         }
 
-        return hasStarColumn;
-    }
-
-    private void MeasureColumnCells(DataGridColumn column, List<DataGridRow> rows)
-    {
-        int columnIndex = column.Index;
-
-        for (var r = 0; r < rows.Count; r++)
-        {
-            var row = rows[r];
-            if (row.CellsPresenter?.Cells is { })
-            {
-                var cell = row.CellsPresenter.Cells[columnIndex];
-                var width = cell.DesiredSize.Width;
-                column.MeasureWidth = Math.Max(column.MeasureWidth, width);
-            }
-        }
+        return false;
     }
 
     private double GetTotalMeasureWidth(IList<DataGridColumn> columns)
     {
         var totalMeasureWidth = 0.0;
-        
+
         for (var c = 0; c < columns.Count; c++)
         {
             var column = columns[c];
@@ -63,7 +42,7 @@ internal class DataGridLayout
         return totalMeasureWidth;
     }
 
-    private void CalculateColumnWidths(IList<DataGridColumn> columns, double finalWidth)
+    private void SetMeasureWidths(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -89,8 +68,6 @@ internal class DataGridLayout
 
         var starColumnsWidth = Math.Max(0, finalWidth - totalPixelSize);
 
-        // Debug.WriteLine($"starColumnsWidth='{starColumnsWidth}', finalWidth='{finalWidth}', totalPixelSize='{totalPixelSize}', totalStarSize='{totalStarSize}'");
-
         for (var c = 0; c < columns.Count; c++)
         {
             var column = columns[c];
@@ -100,12 +77,25 @@ internal class DataGridLayout
                 case GridUnitType.Star:
                     var percentage = column.Width.Value / totalStarSize;
                     var width = starColumnsWidth * percentage;
-                    // Debug.WriteLine($"[{c}] width='{width}', percentage='{percentage}', finalWidth='{finalWidth}'");
                     column.MeasureWidth = width;
                     totalPixelSize += column.MeasureWidth;
                     break;
             }
         }
+    }
+
+    private double GetTotalHeight(IList<DataGridRow> rows)
+    {
+        var totalHeight = 0.0;
+
+        for (var r = 0; r < rows.Count; r++)
+        {
+            var row = rows[r];
+            var height = row.DesiredSize.Height;
+            totalHeight += height;
+        }
+
+        return totalHeight;
     }
 
     public Size MeasureRows(Size availableSize)
@@ -120,52 +110,11 @@ internal class DataGridLayout
             row.Measure(availableSize);
         }
 
-        var totalWidth = 0.0;
-        var totalHeight = 0.0;
-
-        for (var c = 0; c < _dataGrid.Columns.Count; c++)
-        {
-            var column = _dataGrid.Columns[c];
-
-            MeasureColumnCells(column, _dataGrid.Rows);
-
-            totalWidth += column.MeasureWidth;
-        }
-
-        for (var r = 0; r < _dataGrid.Rows.Count; r++)
-        {
-            var row = _dataGrid.Rows[r];
-            var height = row.DesiredSize.Height;
-            totalHeight += height;
-        }
-
+        var totalWidth = GetTotalMeasureWidth(_dataGrid.Columns);
+        var totalHeight = GetTotalHeight(_dataGrid.Rows);
         var hasStarColumn = HasStarColumn(_dataGrid.Columns);
 
-        var size = new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
-        // Debug.WriteLine($"[MeasureRows] size='{size}'");
-        return size;
-    }
-
-    private Size ArrangeRows(List<DataGridRow> rows, double totalWidth)
-    {
-        var offset = 0.0;
-        var finalSizeWidth = 0.0;
-
-        foreach (var row in rows)
-        {
-            var rect = new Rect(
-                0.0, 
-                offset, 
-                totalWidth, 
-                row.DesiredSize.Height);
-
-            row.Arrange(rect);
-
-            offset += row.DesiredSize.Height;
-            finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
-        }
-
-        return new Size(finalSizeWidth, offset);
+        return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
     }
 
     public Size ArrangeRows(Size finalSize)
@@ -175,13 +124,21 @@ internal class DataGridLayout
             return finalSize;
         }
 
-        CalculateColumnWidths(_dataGrid.Columns, finalSize.Width);
+        SetMeasureWidths(_dataGrid.Columns, finalSize.Width);
 
         var totalWidth = GetTotalMeasureWidth(_dataGrid.Columns);
+        var offset = 0.0;
+        var finalSizeWidth = 0.0;
 
-        var size = ArrangeRows(_dataGrid.Rows, totalWidth);
+        foreach (var row in _dataGrid.Rows)
+        {
+            var height = row.DesiredSize.Height;
+            var rect = new Rect(0.0, offset, totalWidth, height);
+            row.Arrange(rect);
+            offset += height;
+            finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
+        }
 
-        // Debug.WriteLine($"[ArrangeRows] size='{size}'");
-        return size;
+        return new Size(finalSizeWidth, offset);
     }
 }

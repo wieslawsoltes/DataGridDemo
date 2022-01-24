@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 
 namespace DataGridDemo.Controls;
@@ -10,6 +11,8 @@ public class DataGridCell : Control
     internal IControl? Child { get; set; }
 
     internal DataGrid? DataGrid { get; set; }
+
+    internal double MeasureWidth { get; set; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -25,9 +28,14 @@ public class DataGridCell : Control
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        if (Child is { })
+        if (Child is { } && Column is { })
         {
             Child.Measure(availableSize);
+
+            MeasureWidth = Child.DesiredSize.Width;
+
+            Column.MeasureWidth = Math.Max(Column.MeasureWidth, MeasureWidth);
+
             return Child.DesiredSize;
         }
 
