@@ -127,18 +127,18 @@ internal class DataGridLayout
         SetMeasureWidths(_dataGrid.Columns, finalSize.Width);
 
         var totalWidth = GetTotalMeasureWidth(_dataGrid.Columns);
-        var offset = 0.0;
-        var finalSizeWidth = 0.0;
+        var totalHeight = 0.0;
+        var maxWidth = 0.0;
 
         foreach (var row in _dataGrid.Rows)
         {
             var height = row.DesiredSize.Height;
-            var rect = new Rect(0.0, offset, totalWidth, height);
+            var rect = new Rect(0.0, totalHeight, totalWidth, height);
             row.Arrange(rect);
-            offset += height;
-            finalSizeWidth = Math.Max(finalSizeWidth, totalWidth);
+            totalHeight += height;
+            maxWidth = Math.Max(maxWidth, totalWidth);
         }
 
-        return new Size(finalSizeWidth, offset);
+        return new Size(maxWidth, totalHeight);
     }
 }
