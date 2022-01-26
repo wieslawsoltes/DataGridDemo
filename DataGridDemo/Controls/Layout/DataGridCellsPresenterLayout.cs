@@ -44,9 +44,12 @@ internal static class DataGridCellsPresenterLayout
             {
                 continue;
             }
+
             var width = column.MeasureWidth;
             var height = cell.DesiredSize.Height;
+
             cell.Arrange(new Rect(totalWidth, 0.0, width, height));
+   
             totalWidth += width;
             maxHeight = Math.Max(maxHeight, height);
         }
