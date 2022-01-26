@@ -84,9 +84,6 @@
           </Setter.Value>
         </Setter>
       </Style>
-      <Style Selector="DataBox DataBoxRow:nth-child(2n)">
-        <Setter Property="Background" Value="#fff8f8f8"/>
-      </Style>
       <Style Selector="DataBoxRow">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Margin" Value="0" />
@@ -103,6 +100,9 @@
             </Grid>
           </ControlTemplate>
         </Setter>
+      </Style>
+      <Style Selector="DataBox DataBoxRow:nth-child(2n)">
+        <Setter Property="Background" Value="#fff8f8f8"/>
       </Style>
     </DataBox.Styles>
   </DataBox>
