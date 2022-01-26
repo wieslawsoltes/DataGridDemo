@@ -35,6 +35,20 @@ internal static class DataGridRowsLayout
         return totalMeasureWidth;
     }
 
+    private static double GetRowsTotalHeight(IList<DataGridRow> rows)
+    {
+        var totalHeight = 0.0;
+
+        for (var r = 0; r < rows.Count; r++)
+        {
+            var row = rows[r];
+            var height = row.DesiredSize.Height;
+            totalHeight += height;
+        }
+
+        return totalHeight;
+    }
+
     private static void SetColumnsFinalMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
@@ -77,20 +91,6 @@ internal static class DataGridRowsLayout
         }
     }
 
-    private static double GetTotalRowsHeight(IList<DataGridRow> rows)
-    {
-        var totalHeight = 0.0;
-
-        for (var r = 0; r < rows.Count; r++)
-        {
-            var row = rows[r];
-            var height = row.DesiredSize.Height;
-            totalHeight += height;
-        }
-
-        return totalHeight;
-    }
-
     public static Size Measure(Size availableSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
@@ -104,7 +104,7 @@ internal static class DataGridRowsLayout
         }
 
         var totalWidth = GetColumnsTotalMeasureWidth(columns);
-        var totalHeight = GetTotalRowsHeight(rows);
+        var totalHeight = GetRowsTotalHeight(rows);
         var hasStarColumn = HasStarColumn(columns);
 
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
@@ -129,7 +129,9 @@ internal static class DataGridRowsLayout
         {
             var height = row.DesiredSize.Height;
             var rect = new Rect(0.0, totalHeight, totalWidth, height);
+
             row.Arrange(rect);
+
             totalHeight += height;
             maxWidth = Math.Max(maxWidth, totalWidth);
         }
