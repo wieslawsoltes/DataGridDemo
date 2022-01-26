@@ -10,23 +10,23 @@ using DataGridDemo.Controls.Layout;
 
 namespace DataGridDemo.Controls;
 
-public class DataGrid : TemplatedControl, IChildIndexProvider
+public class DataBox : TemplatedControl, IChildIndexProvider
 {
-    public static readonly DirectProperty<DataGrid, AvaloniaList<DataGridColumn>> ColumnsProperty = 
-        AvaloniaProperty.RegisterDirect<DataGrid, AvaloniaList<DataGridColumn>>(
+    public static readonly DirectProperty<DataBox, AvaloniaList<DataBoxColumn>> ColumnsProperty = 
+        AvaloniaProperty.RegisterDirect<DataBox, AvaloniaList<DataBoxColumn>>(
             nameof(Columns), 
             o => o.Columns);
 
-    public static readonly DirectProperty<DataGrid, IList?> ItemsProperty = 
-        AvaloniaProperty.RegisterDirect<DataGrid, IList?>(
+    public static readonly DirectProperty<DataBox, IList?> ItemsProperty = 
+        AvaloniaProperty.RegisterDirect<DataBox, IList?>(
             nameof(Items), 
             o => o.Items, 
             (o, v) => o.Items = v);
 
-    private AvaloniaList<DataGridColumn> _columns;
+    private AvaloniaList<DataBoxColumn> _columns;
     private IList? _items;
 
-    public AvaloniaList<DataGridColumn> Columns
+    public AvaloniaList<DataBoxColumn> Columns
     {
         get => _columns;
         private set => SetAndRaise(ColumnsProperty, ref _columns, value);
@@ -38,11 +38,11 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
         set => SetAndRaise(ItemsProperty, ref _items, value);
     }
 
-    internal List<DataGridRow>? Rows { get; set; }
+    internal List<DataBoxRow>? Rows { get; set; }
 
-    public DataGrid()
+    public DataBox()
     {
-        _columns = new AvaloniaList<DataGridColumn>();
+        _columns = new AvaloniaList<DataBoxColumn>();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -59,11 +59,11 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
             return;
         }
 
-        Rows = new List<DataGridRow>();
+        Rows = new List<DataBoxRow>();
 
         foreach (var item in Items)
         {
-            var row = new DataGridRow()
+            var row = new DataBoxRow()
             {
                 Content = item,
                 DataGrid = this,
@@ -83,17 +83,17 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return DataGridRowsLayout.Measure(availableSize, Columns, Rows);
+        return DataBoxRowsLayout.Measure(availableSize, Columns, Rows);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return DataGridRowsLayout.Arrange(finalSize, Columns, Rows);
+        return DataBoxRowsLayout.Arrange(finalSize, Columns, Rows);
     }
 
     int IChildIndexProvider.GetChildIndex(ILogical child)
     {
-        if (Rows is { } && child is DataGridRow row)
+        if (Rows is { } && child is DataBoxRow row)
         {
             return Rows.IndexOf(row);
         }

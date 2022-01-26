@@ -5,11 +5,11 @@ using DataGridDemo.Controls.Layout;
 
 namespace DataGridDemo.Controls;
 
-public class DataGridCellsPresenter : Control
+public class DataBoxCellsPresenter : Control
 {
-    internal List<DataGridCell>? Cells { get; set; }
+    internal List<DataBoxCell>? Cells { get; set; }
 
-    internal DataGrid? DataGrid { get; set; }
+    internal DataBox? DataGrid { get; set; }
 
     internal object? Content { get; set; }
 
@@ -20,11 +20,11 @@ public class DataGridCellsPresenter : Control
             return;
         }
 
-        Cells = new List<DataGridCell>();
+        Cells = new List<DataBoxCell>();
 
         foreach (var column in DataGrid.Columns)
         {
-            var cell = new DataGridCell()
+            var cell = new DataBoxCell()
             {
                 Column = column,
                 Child = Content is { } ? column.CellTemplate?.Build(Content) : null,
@@ -49,11 +49,11 @@ public class DataGridCellsPresenter : Control
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return DataGridCellsLayout.Measure(availableSize, Cells);
+        return DataBoxCellsLayout.Measure(availableSize, Cells);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return DataGridCellsLayout.Arrange(finalSize, Cells);
+        return DataBoxCellsLayout.Arrange(finalSize, Cells);
     }
 }

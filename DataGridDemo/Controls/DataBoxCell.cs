@@ -4,13 +4,13 @@ using DataGridDemo.Controls.Layout;
 
 namespace DataGridDemo.Controls;
 
-public class DataGridCell : Control
+public class DataBoxCell : Control
 {
-    internal DataGridColumn? Column { get; set; }
+    internal DataBoxColumn? Column { get; set; }
 
     internal IControl? Child { get; set; }
 
-    internal DataGrid? DataGrid { get; set; }
+    internal DataBox? DataGrid { get; set; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -28,7 +28,7 @@ public class DataGridCell : Control
     {
         if (Child is { } && Column is { })
         {
-            return DataGridCellLayout.Measure(Child, Column, availableSize);
+            return DataBoxCellLayout.Measure(Child, Column, availableSize);
         }
 
         return base.MeasureOverride(availableSize);
@@ -38,7 +38,7 @@ public class DataGridCell : Control
     {
         if (Child is { } && Column is { })
         {
-            return DataGridCellLayout.Arrange(Child, Column, finalSize);
+            return DataBoxCellLayout.Arrange(Child, Column, finalSize);
         }
 
         return base.ArrangeOverride(finalSize);

@@ -17,45 +17,45 @@
 
   <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
     
-    <c:DataGrid Items="{Binding Items}" HorizontalAlignment="Stretch">
-      <c:DataGrid.Columns>
-        <c:DataGridColumn Width="*">
+    <c:DataBox Items="{Binding Items}" HorizontalAlignment="Stretch">
+      <c:DataBox.Columns>
+        <c:DataBoxColumn Width="*">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
               <TextBlock Text="{Binding Column0}"  Margin="5"/>
             </Border>
           </DataTemplate>
-        </c:DataGridColumn>
-        <c:DataGridColumn Width="*">
+        </c:DataBoxColumn>
+        <c:DataBoxColumn Width="*">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
               <TextBlock Text="{Binding Column1}"  Margin="5"/>
             </Border>
           </DataTemplate>
-        </c:DataGridColumn>
-        <c:DataGridColumn Width="*">
+        </c:DataBoxColumn>
+        <c:DataBoxColumn Width="*">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
               <TextBlock Text="{Binding Column2}"  Margin="5"/>
             </Border>
           </DataTemplate>
-        </c:DataGridColumn>
-      </c:DataGrid.Columns>
-      <c:DataGrid.Styles>
-        <Style Selector="c|DataGrid c|DataGridRow:nth-child(2n)">
+        </c:DataBoxColumn>
+      </c:DataBox.Columns>
+      <c:DataBox.Styles>
+        <Style Selector="c|DataBox c|DataBoxRow:nth-child(2n)">
           <Setter Property="Background" Value="#fff8f8f8"/>
         </Style>
-        <Style Selector="c|DataGridRow">
+        <Style Selector="c|DataBoxRow">
           <Setter Property="Template">
             <ControlTemplate>
               <Border Background="{TemplateBinding Background}">
-                <c:DataGridCellsPresenter Name="PART_CellsPresenter" />
+                <c:DataBoxCellsPresenter Name="PART_CellsPresenter" />
               </Border>
             </ControlTemplate>
           </Setter>
         </Style>
-      </c:DataGrid.Styles>
-    </c:DataGrid>
+      </c:DataBox.Styles>
+    </c:DataBox>
 
   </ScrollViewer>
 

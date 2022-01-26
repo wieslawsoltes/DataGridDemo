@@ -3,17 +3,17 @@ using Avalonia.Controls.Primitives;
 
 namespace DataGridDemo.Controls;
 
-public class DataGridRow : TemplatedControl
+public class DataBoxRow : TemplatedControl
 {
-    internal DataGrid? DataGrid { get; set; }
+    internal DataBox? DataGrid { get; set; }
 
     internal object? Content { get; set; }
 
-    internal DataGridCellsPresenter? CellsPresenter { get; set; }
+    internal DataBoxCellsPresenter? CellsPresenter { get; set; }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        CellsPresenter = e.NameScope.Find<DataGridCellsPresenter>("PART_CellsPresenter");
+        CellsPresenter = e.NameScope.Find<DataBoxCellsPresenter>("PART_CellsPresenter");
 
         if (CellsPresenter is { })
         {

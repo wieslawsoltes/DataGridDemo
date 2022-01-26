@@ -5,13 +5,13 @@ using Avalonia.Metadata;
 
 namespace DataGridDemo.Controls;
 
-public class DataGridColumn : AvaloniaObject
+public class DataBoxColumn : AvaloniaObject
 {
     public static readonly StyledProperty<IDataTemplate?> CellTemplateProperty = 
-        AvaloniaProperty.Register<DataGridColumn, IDataTemplate?>(nameof(CellTemplate));
+        AvaloniaProperty.Register<DataBoxColumn, IDataTemplate?>(nameof(CellTemplate));
 
     public static readonly StyledProperty<GridLength> WidthProperty = 
-        AvaloniaProperty.Register<DataGridColumn, GridLength>(nameof(Width));
+        AvaloniaProperty.Register<DataBoxColumn, GridLength>(nameof(Width));
 
     [Content]
     public IDataTemplate? CellTemplate
@@ -25,8 +25,6 @@ public class DataGridColumn : AvaloniaObject
         get => GetValue(WidthProperty);
         set => SetValue(WidthProperty, value);
     }
-
-    internal int Index { get; set; }
 
     internal double MeasureWidth { get; set; }
 }

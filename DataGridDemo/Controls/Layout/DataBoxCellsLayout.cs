@@ -4,9 +4,9 @@ using Avalonia;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal static class DataGridCellsLayout
+internal static class DataBoxCellsLayout
 {
-    public static Size Measure(Size availableSize, IList<DataGridCell>? cells)
+    public static Size Measure(Size availableSize, IList<DataBoxCell>? cells)
     {
         if (cells is null)
         {
@@ -26,7 +26,7 @@ internal static class DataGridCellsLayout
         return new Size(totalWidth, maxHeight);
     }
 
-    public static Size Arrange(Size finalSize, IList<DataGridCell>? cells)
+    public static Size Arrange(Size finalSize, IList<DataBoxCell>? cells)
     {
         if (cells is null)
         {

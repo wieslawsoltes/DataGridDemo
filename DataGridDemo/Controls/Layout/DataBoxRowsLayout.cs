@@ -5,9 +5,9 @@ using Avalonia.Controls;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal static class DataGridRowsLayout
+internal static class DataBoxRowsLayout
 {
-    private static bool HasStarColumn(IList<DataGridColumn> columns)
+    private static bool HasStarColumn(IList<DataBoxColumn> columns)
     {
         for (var c = 0; c < columns.Count; c++)
         {
@@ -21,7 +21,7 @@ internal static class DataGridRowsLayout
         return false;
     }
 
-    private static double GetColumnsTotalMeasureWidth(IList<DataGridColumn> columns)
+    private static double GetColumnsTotalMeasureWidth(IList<DataBoxColumn> columns)
     {
         var totalMeasureWidth = 0.0;
 
@@ -35,7 +35,7 @@ internal static class DataGridRowsLayout
         return totalMeasureWidth;
     }
 
-    private static double GetRowsTotalHeight(IList<DataGridRow> rows)
+    private static double GetRowsTotalHeight(IList<DataBoxRow> rows)
     {
         var totalHeight = 0.0;
 
@@ -49,7 +49,7 @@ internal static class DataGridRowsLayout
         return totalHeight;
     }
 
-    private static void SetColumnsFinalMeasureWidth(IList<DataGridColumn> columns, double finalWidth)
+    private static void SetColumnsFinalMeasureWidth(IList<DataBoxColumn> columns, double finalWidth)
     {
         var totalStarSize = 0.0;
         var totalPixelSize = 0.0;
@@ -91,7 +91,7 @@ internal static class DataGridRowsLayout
         }
     }
 
-    public static Size Measure(Size availableSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
+    public static Size Measure(Size availableSize, IList<DataBoxColumn>? columns, IList<DataBoxRow>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {
@@ -110,7 +110,7 @@ internal static class DataGridRowsLayout
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
     }
 
-    public static Size Arrange(Size finalSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
+    public static Size Arrange(Size finalSize, IList<DataBoxColumn>? columns, IList<DataBoxRow>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {
