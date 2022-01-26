@@ -4,7 +4,7 @@ using Avalonia;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal static class DataGridCellsLayout
+internal static class DataGridCellsPresenterLayout
 {
     public static Size MeasureCells(Size availableSize, IList<DataGridCell>? cells)
     {
