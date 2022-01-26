@@ -83,12 +83,12 @@ public class DataGrid : TemplatedControl, IChildIndexProvider
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return DataGridLayout.MeasureRows(availableSize, Columns, Rows);
+        return DataGridRowsLayout.Measure(availableSize, Columns, Rows);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return DataGridLayout.ArrangeRows(finalSize, Columns, Rows);
+        return DataGridRowsLayout.Arrange(finalSize, Columns, Rows);
     }
 
     int IChildIndexProvider.GetChildIndex(ILogical child)

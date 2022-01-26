@@ -49,11 +49,11 @@ public class DataGridCellsPresenter : Control
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        return DataGridCellsPresenterLayout.MeasureCells(availableSize, Cells);
+        return DataGridCellsLayout.Measure(availableSize, Cells);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        return DataGridCellsPresenterLayout.ArrangeCells(finalSize, Cells);
+        return DataGridCellsLayout.Arrange(finalSize, Cells);
     }
 }

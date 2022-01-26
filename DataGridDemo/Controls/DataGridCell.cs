@@ -28,7 +28,7 @@ public class DataGridCell : Control
     {
         if (Child is { } && Column is { })
         {
-            return DataGridCellLayout.MeasureChild(Child, Column, availableSize);
+            return DataGridCellLayout.Measure(Child, Column, availableSize);
         }
 
         return base.MeasureOverride(availableSize);
@@ -38,7 +38,7 @@ public class DataGridCell : Control
     {
         if (Child is { } && Column is { })
         {
-            return DataGridCellLayout.ArrangeChild(Child, Column, finalSize);
+            return DataGridCellLayout.Arrange(Child, Column, finalSize);
         }
 
         return base.ArrangeOverride(finalSize);

@@ -5,7 +5,7 @@ using Avalonia.Controls;
 
 namespace DataGridDemo.Controls.Layout;
 
-internal static class DataGridLayout
+internal static class DataGridRowsLayout
 {
     private static bool HasStarColumn(IList<DataGridColumn> columns)
     {
@@ -91,7 +91,7 @@ internal static class DataGridLayout
         return totalHeight;
     }
 
-    public static Size MeasureRows(Size availableSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
+    public static Size Measure(Size availableSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {
@@ -110,7 +110,7 @@ internal static class DataGridLayout
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
     }
 
-    public static Size ArrangeRows(Size finalSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
+    public static Size Arrange(Size finalSize, IList<DataGridColumn>? columns, IList<DataGridRow>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {

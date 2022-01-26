@@ -6,7 +6,7 @@ namespace DataGridDemo.Controls.Layout;
 
 internal static class DataGridCellLayout
 {
-    public static Size MeasureChild(IControl child, DataGridColumn column, Size availableSize)
+    public static Size Measure(IControl child, DataGridColumn column, Size availableSize)
     {
         child.Measure(availableSize);
 
@@ -17,7 +17,7 @@ internal static class DataGridCellLayout
         return child.DesiredSize;
     }
 
-    public static Size ArrangeChild(IControl child, DataGridColumn column, Size finalSize)
+    public static Size Arrange(IControl child, DataGridColumn column, Size finalSize)
     {
         var width = column.MeasureWidth;
         var height = child.DesiredSize.Height;
