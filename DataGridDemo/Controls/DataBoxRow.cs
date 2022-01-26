@@ -1,13 +1,20 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Styling;
 
 namespace DataGridDemo.Controls;
 
-public class DataBoxRow : TemplatedControl
+public class DataBoxRow : ListBoxItem, IStyleable
 {
-    internal DataBox? DataGrid { get; set; }
+    Type IStyleable.StyleKey => typeof(DataBoxRow);
 
-    internal object? Content { get; set; }
+    internal DataBox? DataBox { get; set; }
+
+    internal double MeasureWidth { get; set; }
+
+    internal double MeasureHeight { get; set; }
 
     internal DataBoxCellsPresenter? CellsPresenter { get; set; }
 
@@ -17,11 +24,23 @@ public class DataBoxRow : TemplatedControl
 
         if (CellsPresenter is { })
         {
-            CellsPresenter.Content = Content;
-            CellsPresenter.DataGrid = DataGrid;
+            CellsPresenter.Content = DataContext;
+            CellsPresenter.DataBox = DataBox;
             CellsPresenter.GenerateCells();
         }
         
         base.OnApplyTemplate(e);
+    }
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        return base.MeasureOverride(availableSize);
+    }
+
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        var size = new Size(MeasureWidth, MeasureHeight);
+
+        return base.ArrangeOverride(size);
     }
 }

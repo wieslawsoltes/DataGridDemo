@@ -10,7 +10,7 @@ public class DataBoxCell : Control
 
     internal IControl? Child { get; set; }
 
-    internal DataBox? DataGrid { get; set; }
+    internal DataBox? DataBox { get; set; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {

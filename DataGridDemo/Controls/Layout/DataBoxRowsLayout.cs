@@ -35,7 +35,7 @@ internal static class DataBoxRowsLayout
         return totalMeasureWidth;
     }
 
-    private static double GetRowsTotalHeight(IList<DataBoxRow> rows)
+    private static double GetRowsTotalHeight(IList<IControl> rows)
     {
         var totalHeight = 0.0;
 
@@ -91,17 +91,17 @@ internal static class DataBoxRowsLayout
         }
     }
 
-    public static Size Measure(Size availableSize, IList<DataBoxColumn>? columns, IList<DataBoxRow>? rows)
+    public static Size Measure(Size availableSize, IList<DataBoxColumn>? columns, IList<IControl>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {
             return availableSize;
         }
 
-        foreach (var row in rows)
-        {
-            row.Measure(availableSize);
-        }
+        //foreach (var row in rows)
+        //{
+        //    row.Measure(availableSize);
+        //}
 
         var totalWidth = GetColumnsTotalMeasureWidth(columns);
         var totalHeight = GetRowsTotalHeight(rows);
@@ -110,7 +110,7 @@ internal static class DataBoxRowsLayout
         return new Size(hasStarColumn ? 0 : totalWidth, totalHeight);
     }
 
-    public static Size Arrange(Size finalSize, IList<DataBoxColumn>? columns, IList<DataBoxRow>? rows)
+    public static Size Arrange(Size finalSize, IList<DataBoxColumn>? columns, IList<IControl>? rows)
     {
         if (columns is null || columns.Count <= 0 || rows is null)
         {
@@ -127,10 +127,18 @@ internal static class DataBoxRowsLayout
 
         foreach (var row in rows)
         {
+            var width = totalWidth;
             var height = row.DesiredSize.Height;
-            var rect = new Rect(0.0, totalHeight, totalWidth, height);
+            var rect = new Rect(0.0, totalHeight, width, height);
 
-            row.Arrange(rect);
+            //row.Arrange(rect);
+            //*
+            if (row is DataBoxRow dataBoxRow)
+            {
+                dataBoxRow.MeasureWidth = width;
+                dataBoxRow.MeasureHeight = height;
+            }
+            //*/
 
             totalHeight += height;
             maxWidth = Math.Max(maxWidth, totalWidth);

@@ -3,7 +3,6 @@
         xmlns:vm="using:DataGridDemo.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:c="clr-namespace:DataGridDemo.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DataGridDemo.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
@@ -15,48 +14,99 @@
     <vm:MainWindowViewModel />
   </Design.DataContext>
 
-  <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-    
-    <c:DataBox Items="{Binding Items}" HorizontalAlignment="Stretch">
-      <c:DataBox.Columns>
-        <c:DataBoxColumn Width="*">
-          <DataTemplate DataType="vm:ItemViewModel">
-            <Border>
-              <TextBlock Text="{Binding Column0}"  Margin="5"/>
-            </Border>
-          </DataTemplate>
-        </c:DataBoxColumn>
-        <c:DataBoxColumn Width="*">
-          <DataTemplate DataType="vm:ItemViewModel">
-            <Border>
-              <TextBlock Text="{Binding Column1}"  Margin="5"/>
-            </Border>
-          </DataTemplate>
-        </c:DataBoxColumn>
-        <c:DataBoxColumn Width="*">
-          <DataTemplate DataType="vm:ItemViewModel">
-            <Border>
-              <TextBlock Text="{Binding Column2}"  Margin="5"/>
-            </Border>
-          </DataTemplate>
-        </c:DataBoxColumn>
-      </c:DataBox.Columns>
-      <c:DataBox.Styles>
-        <Style Selector="c|DataBox c|DataBoxRow:nth-child(2n)">
-          <Setter Property="Background" Value="#fff8f8f8"/>
-        </Style>
-        <Style Selector="c|DataBoxRow">
-          <Setter Property="Template">
-            <ControlTemplate>
-              <Border Background="{TemplateBinding Background}">
-                <c:DataBoxCellsPresenter Name="PART_CellsPresenter" />
-              </Border>
-            </ControlTemplate>
-          </Setter>
-        </Style>
-      </c:DataBox.Styles>
-    </c:DataBox>
+  <DockPanel>
 
-  </ScrollViewer>
+    <DockPanel DockPanel.Dock="Top" Height="36" Background="WhiteSmoke">
+      
+    </DockPanel>
+    
+  <DataBox Items="{Binding Items}" HorizontalAlignment="Stretch">
+    <DataBox.Columns>
+      <DataBoxColumn Width="*">
+        <DataTemplate DataType="vm:ItemViewModel">
+          <Border>
+            <TextBlock Text="{Binding Column0}"  Margin="5"/>
+          </Border>
+        </DataTemplate>
+      </DataBoxColumn>
+      <DataBoxColumn Width="*">
+        <DataTemplate DataType="vm:ItemViewModel">
+          <Border>
+            <TextBlock Text="{Binding Column1}"  Margin="5"/>
+          </Border>
+        </DataTemplate>
+      </DataBoxColumn>
+      <DataBoxColumn Width="*">
+        <DataTemplate DataType="vm:ItemViewModel">
+          <Border>
+            <TextBlock Text="{Binding Column2}"  Margin="5"/>
+          </Border>
+        </DataTemplate>
+      </DataBoxColumn>
+    </DataBox.Columns>
+    <DataBox.Styles>
+      <Style Selector="DataBox">
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />        
+        <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />   
+        <Setter Property="VirtualizationMode" Value="Simple" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" /> 
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
+              <ScrollViewer Name="PART_ScrollViewer"
+                            HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                            VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+                            AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}">
+                <ItemsPresenter Name="PART_ItemsPresenter"
+                                Items="{TemplateBinding Items}"
+                                ItemsPanel="{TemplateBinding ItemsPanel}"
+                                ItemTemplate="{TemplateBinding ItemTemplate}"
+                                Margin="{TemplateBinding Padding}"
+                                VirtualizationMode="{TemplateBinding VirtualizationMode}"/>
+              </ScrollViewer>
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Setter Property="ItemsPanel">
+          <Setter.Value>
+            <ItemsPanelTemplate>
+              <DataBoxPanel />
+            </ItemsPanelTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style Selector="DataBox DataBoxRow:nth-child(2n)">
+        <Setter Property="Background" Value="#fff8f8f8"/>
+      </Style>
+      <Style Selector="DataBoxRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="TextBlock.FontWeight" Value="Normal" />
+        <Setter Property="TextBlock.FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Grid Name="PART_Root" RowDefinitions="*,Auto">
+              <Rectangle Grid.Row="0" Name="BackgroundRectangle" />
+              <DataBoxCellsPresenter Grid.Row="0" Name="PART_CellsPresenter"/>
+              <Rectangle Grid.Row="1" Name="PART_BottomGridLine"/>
+            </Grid>
+          </ControlTemplate>
+        </Setter>
+      </Style>
+    </DataBox.Styles>
+  </DataBox>
+
+  </DockPanel>
 
 </Window>

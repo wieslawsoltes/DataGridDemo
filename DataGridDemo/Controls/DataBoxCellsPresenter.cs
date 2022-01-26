@@ -9,26 +9,26 @@ public class DataBoxCellsPresenter : Control
 {
     internal List<DataBoxCell>? Cells { get; set; }
 
-    internal DataBox? DataGrid { get; set; }
+    internal DataBox? DataBox { get; set; }
 
     internal object? Content { get; set; }
 
     internal void GenerateCells()
     {
-        if (DataGrid?.Columns is null)
+        if (DataBox?.Columns is null)
         {
             return;
         }
 
         Cells = new List<DataBoxCell>();
 
-        foreach (var column in DataGrid.Columns)
+        foreach (var column in DataBox.Columns)
         {
             var cell = new DataBoxCell()
             {
                 Column = column,
                 Child = Content is { } ? column.CellTemplate?.Build(Content) : null,
-                DataGrid = DataGrid
+                DataBox = DataBox
             };
 
             Cells.Add(cell);
