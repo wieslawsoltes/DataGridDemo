@@ -129,9 +129,12 @@ internal static class DataBoxRowsLayout
         {
             var width = totalWidth;
             var height = row.DesiredSize.Height;
+            
+            /*
             var rect = new Rect(0.0, totalHeight, width, height);
+            row.Arrange(rect);
+            //*/
 
-            //row.Arrange(rect);
             //*
             if (row is DataBoxRow dataBoxRow)
             {
