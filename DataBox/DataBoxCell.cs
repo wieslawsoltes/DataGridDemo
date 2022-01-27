@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using DataGridDemo.Controls.Layout;
+using DataBox.Layout;
 
-namespace DataGridDemo.Controls;
+namespace DataBox;
 
 public class DataBoxCell : Control
 {

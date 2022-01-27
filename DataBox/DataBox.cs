@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Generators;
 using Avalonia.Styling;
 
-namespace DataGridDemo.Controls;
+namespace DataBox;
 
 public class DataBox : ListBox, IStyleable
 {

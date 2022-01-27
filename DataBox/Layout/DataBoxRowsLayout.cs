@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 
-namespace DataGridDemo.Controls.Layout;
+namespace DataBox.Layout;
 
 internal static class DataBoxRowsLayout
 {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Avalonia;
 
-namespace DataGridDemo.Controls.Layout;
+namespace DataBox.Layout;
 
 internal static class DataBoxCellsLayout
 {

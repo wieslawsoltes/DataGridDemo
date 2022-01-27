@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Metadata;
 
-namespace DataGridDemo.Controls;
+namespace DataBox;
 
 public class DataBoxColumn : AvaloniaObject
 {

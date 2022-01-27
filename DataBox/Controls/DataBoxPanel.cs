@@ -1,10 +1,9 @@
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
-using DataGridDemo.Controls.Layout;
+using DataBox.Layout;
 
-namespace DataGridDemo.Controls;
+namespace DataBox.Controls;
 
 public class DataBoxPanel : VirtualizingStackPanel
 {

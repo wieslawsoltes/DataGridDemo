@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
-using DataGridDemo.Controls.Layout;
+using DataBox.Layout;
 
-namespace DataGridDemo.Controls;
+namespace DataBox.Primitives;
 
 public class DataBoxCellsPresenter : Control
 {

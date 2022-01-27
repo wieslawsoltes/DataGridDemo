@@ -1,10 +1,10 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Styling;
+using DataBox.Primitives;
 
-namespace DataGridDemo.Controls;
+namespace DataBox;
 
 public class DataBoxRow : ListBoxItem, IStyleable
 {
