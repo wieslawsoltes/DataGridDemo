@@ -10,13 +10,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         Items = new List<object>();
 
-        for (var i = 0; i < 50; i++)
+        for (var i = 0; i < 5_000; i++)
         {
             var item = new ItemViewModel()
             {
-                Column0 = $"Column {i}-0",
-                Column1 = $"Column {i}-1",
-                Column2 = $"Column {i}-2",
+                Column0 = $"Pixel Column {i}-0",
+                Column1 = $"Very long text Column {i}-1",
+                Column2 = $"Auto Column {i}-2",
             };
 
             Items.Add(item);
