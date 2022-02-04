@@ -22,24 +22,24 @@
     <DataBox Items="{Binding Items}" HorizontalAlignment="Stretch">
 
       <DataBox.Columns>
-        <DataBoxColumn Width="*">
+        <DataBoxColumn Width="200">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
-              <TextBlock Text="{Binding Column0}"  Margin="5"/>
+              <TextBlock Text="{Binding Column0}" Margin="5"/>
             </Border>
           </DataTemplate>
         </DataBoxColumn>
         <DataBoxColumn Width="*">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
-              <TextBlock Text="{Binding Column1}"  Margin="5"/>
+              <TextBlock Text="{Binding Column1}" TextTrimming="CharacterEllipsis" Margin="5"/>
             </Border>
           </DataTemplate>
         </DataBoxColumn>
-        <DataBoxColumn Width="*">
+        <DataBoxColumn Width="Auto">
           <DataTemplate DataType="vm:ItemViewModel">
             <Border>
-              <TextBlock Text="{Binding Column2}"  Margin="5"/>
+              <TextBlock Text="{Binding Column2}" Margin="5"/>
             </Border>
           </DataTemplate>
         </DataBoxColumn>
